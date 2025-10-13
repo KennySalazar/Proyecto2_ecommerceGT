@@ -1,0 +1,20 @@
+package com.ecommerce.gt.ecommerce_gt.usuario.repository;
+
+import com.ecommerce.gt.ecommerce_gt.usuario.entity.Usuario;
+import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
+
+import java.util.Optional;
+
+public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
+  boolean existsByCorreo(String correo);
+
+  @Query(value = """
+      SELECT * FROM ecommerce.usuarios u
+       WHERE u.correo = :correo
+         AND u.esta_activo = TRUE
+         AND u.hash_password = md5(:password)
+      """, nativeQuery = true)
+  Optional<Usuario> login(@Param("correo") String correo, @Param("password") String password);
+
+}
