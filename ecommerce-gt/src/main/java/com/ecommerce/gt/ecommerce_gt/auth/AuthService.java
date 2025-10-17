@@ -8,11 +8,13 @@ import com.ecommerce.gt.ecommerce_gt.usuario.entity.Usuario;
 import com.ecommerce.gt.ecommerce_gt.usuario.repository.RolRepository;
 import com.ecommerce.gt.ecommerce_gt.usuario.repository.UsuarioRepository;
 import com.ecommerce.gt.ecommerce_gt.seguridad.JwtUtil;
-import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
+
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+
+import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 
 @Service
 public class AuthService {
@@ -48,22 +50,22 @@ public class AuthService {
     /**
      * Registro de usuario COMUN.
      */
-    public Usuario registerCommon(RegisterRequest req) {
-        if (usuarioRepository.existsByCorreo(req.getCorreo())) {
-            throw new IllegalArgumentException("El correo ya está registrado");
-        }
-        Rol rolComun = rolRepository.findByCodigo("COMUN")
-                .orElseThrow(() -> new IllegalStateException("Rol COMUN no existe"));
-
-        Usuario u = new Usuario();
-        u.setNombre(req.getNombre());
-        u.setCorreo(req.getCorreo());
-        u.setTelefono(req.getTelefono());
-        // MD5 como en tu lógica actual (en producción usa BCrypt/Argon2)
-        u.setHashPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes(StandardCharsets.UTF_8)));
-        u.setRol(Rol.builder().id(rolComun.getId()).codigo(rolComun.getCodigo()).build());
-        u.setEstaActivo(true);
-
-        return usuarioRepository.save(u);
+public Usuario registerCommon(RegisterRequest req) {
+    if (usuarioRepository.existsByCorreo(req.getCorreo())) {
+        throw new IllegalArgumentException("El correo ya está registrado");
     }
+    Rol rolComun = rolRepository.findByCodigo("COMUN")
+            .orElseThrow(() -> new IllegalStateException("Rol COMUN no existe"));
+
+    Usuario u = new Usuario();
+    u.setNombre(req.getNombre());
+    u.setCorreo(req.getCorreo());
+    u.setTelefono(req.getTelefono());
+    u.setHashPassword(org.springframework.util.DigestUtils
+            .md5DigestAsHex(req.getPassword().getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+    u.setRol(rolComun);          // <<< aquí, sin builder
+    u.setEstaActivo(true);
+
+    return usuarioRepository.save(u);
+}
 }
