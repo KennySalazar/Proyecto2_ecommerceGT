@@ -21,15 +21,14 @@ public class AdministradorController {
 
     @GetMapping
     public ResponseEntity<Page<EmpleadoResponse>> listar(
-            @RequestParam(defaultValue = "0") int pagina,
-            @RequestParam(defaultValue = "10") int tamanio) {
-        return ResponseEntity.ok(servicio.listarEmpleados(pagina, tamanio));
+        @RequestParam(defaultValue = "0") int pagina,
+        @RequestParam(defaultValue = "10") int tamanio,
+        @RequestParam(required = false) String nombre,
+        @RequestParam(required = false, defaultValue = "TODOS") String rol
+    ) {
+    return ResponseEntity.ok(servicio.listarEmpleados(pagina, tamanio, nombre, rol));
     }
 
-    @GetMapping("/contadores")
-    public ResponseEntity<EmpleadoContadores> contadores() {
-        return ResponseEntity.ok(servicio.obtenerContadores());
-    }
 
     @PatchMapping("/{id}/estado")
     public ResponseEntity<Void> cambiarEstado(@PathVariable Integer id, @RequestParam boolean activo) {

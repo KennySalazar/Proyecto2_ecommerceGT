@@ -28,4 +28,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
   long countByRol_Codigo(String codigo);
 
   Page<Usuario> findByRol_Codigo(String codigo, Pageable pageable);
+
+  Page<Usuario> findByRol_CodigoInAndNombreContainingIgnoreCase(
+      List<String> roles, String nombre, Pageable p);
+
+  Page<Usuario> findByRol_CodigoAndNombreContainingIgnoreCase(
+      String rol, String nombre, Pageable p);
 }

@@ -4,20 +4,18 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 export interface EmpleadoFila {
-  id: number;
-  nombre: string;
-  correo: string;
-  telefono: string;
-  rol: string;
-  activo: boolean;
+  id: number; nombre: string; correo: string; telefono: string;
+  rol: 'ADMIN'|'MODERADOR'|'LOGISTICA'|'COMUN'; activo: boolean;
 }
 
 // *** Estructura que devuelve Spring Data Page ***
 export interface SpringPage<T> {
   content: T[];
-  number: number;
-  totalPages: number;
   totalElements: number;
+  totalPages: number;
+  number: number; // página actual
+  size: number;
+
 }
 
 @Injectable({ providedIn: 'root' })
@@ -25,15 +23,21 @@ export class EmpleadosService {
   private http = inject(HttpClient);
   private base = `${environment.apiBase}/admin/empleados`;
 
-  listar(pagina = 0, tam = 10) {
-    const params = new HttpParams().set('pagina', pagina).set('tamanio', tam);
-    return this.http.get<SpringPage<EmpleadoFila>>(this.base, { params });
+  listar(pagina: number, tamanio: number, filtros?: { nombre?: string; rol?: string }) {
+    let params = new HttpParams()
+      .set('pagina', pagina)
+      .set('tamanio', tamanio);
+
+    if (filtros?.nombre && filtros.nombre.trim()) {
+      params = params.set('nombre', filtros.nombre.trim());
+    }
+    if (filtros?.rol && filtros.rol !== 'TODOS') {
+      params = params.set('rol', filtros.rol);
+    }
+
+    return this.http.get<SpringPage<EmpleadoFila>>(`${environment.apiBase}/admin/empleados`, { params });
   }
 
-  listarComunes(pagina = 0, tam = 10) {
-    const params = new HttpParams().set('pagina', pagina).set('tamanio', tam);
-    return this.http.get<SpringPage<EmpleadoFila>>(`${this.base}/comunes`, { params });
-  }
 
   // IMPORTANTE: tu backend espera 'contrasena'
   crear(body: {

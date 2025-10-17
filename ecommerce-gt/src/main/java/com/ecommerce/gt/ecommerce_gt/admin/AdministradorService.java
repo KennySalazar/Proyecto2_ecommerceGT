@@ -45,23 +45,29 @@ public class AdministradorService {
                 u.getId(), u.getNombre(), u.getCorreo(), u.getTelefono(), u.getRol().getCodigo(), u.getEstaActivo());
     }
 
-    public Page<EmpleadoResponse> listarEmpleados(int pagina, int tamanio) {
-        Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("id").descending());
-        Page<Usuario> empleados = usuarioRepositorio
-                .findByRol_CodigoIn(List.of("MODERADOR", "LOGISTICA", "ADMIN", "COMUN"), pageable);
+    public Page<EmpleadoResponse> listarEmpleados(int pagina, int tamanio, String nombre, String rol) {
+    Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("id").descending());
 
-        return empleados.map(u -> new EmpleadoResponse(
-                u.getId(), u.getNombre(), u.getCorreo(), u.getTelefono(),
-                u.getRol().getCodigo(), u.getEstaActivo()));
+    Page<Usuario> empleados;
+
+    boolean tieneNombre = (nombre != null && !nombre.isBlank());
+    boolean tieneRol     = (rol != null && !rol.isBlank() && !"TODOS".equalsIgnoreCase(rol));
+
+    if (tieneRol && tieneNombre) {
+        empleados = usuarioRepositorio.findByRol_CodigoAndNombreContainingIgnoreCase(rol, nombre, pageable);
+    } else if (tieneRol) {
+        empleados = usuarioRepositorio.findByRol_Codigo(rol, pageable);
+    } else if (tieneNombre) {
+        empleados = usuarioRepositorio.findByRol_CodigoInAndNombreContainingIgnoreCase(
+            List.of("MODERADOR", "LOGISTICA", "ADMIN", "COMUN"), nombre, pageable);
+    } else {
+        empleados = usuarioRepositorio.findByRol_CodigoIn(
+            List.of("MODERADOR", "LOGISTICA", "ADMIN", "COMUN"), pageable);
     }
 
-    public EmpleadoContadores obtenerContadores() {
-        long total = usuarioRepositorio.countByRol_CodigoIn(List.of("MODERADOR", "LOGISTICA", "ADMIN", "COMUN"));
-        long moderadores = usuarioRepositorio.countByRol_Codigo("MODERADOR");
-        long logistica = usuarioRepositorio.countByRol_Codigo("LOGISTICA");
-        long administradores = usuarioRepositorio.countByRol_Codigo("ADMIN");
-        Long comunes = usuarioRepositorio.countByRol_Codigo("COMUN");
-        return new EmpleadoContadores(total, moderadores, logistica, administradores, comunes);
+    return empleados.map(u -> new EmpleadoResponse(
+        u.getId(), u.getNombre(), u.getCorreo(), u.getTelefono(),
+        u.getRol().getCodigo(), u.getEstaActivo()));
     }
 
     public void cambiarEstado(Integer id, boolean activo) {
