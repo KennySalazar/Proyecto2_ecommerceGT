@@ -1,10 +1,29 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
+import { adminGuard } from './admin/admin.guard';
+import { InicioComponent } from './core/inicio.component';
+import { EmpleadosListarComponent } from './admin/empleados-listar.component';
+import { EmpleadoCrearComponent } from './admin/empleado-crear.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+
+  // Inicio usuario común
+  { path: 'inicio', component: InicioComponent },
+
+  // ADMIN
+   {
+    path: 'admin',
+    canMatch: [adminGuard],
+    children: [
+      { path: 'empleados', component: EmpleadosListarComponent },
+      { path: 'empleados/crear', component: EmpleadoCrearComponent },
+      { path: '', redirectTo: 'empleados', pathMatch: 'full' },
+    ]
+  },
+
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: '**', redirectTo: 'login' }
 ];

@@ -1,0 +1,42 @@
+<!-- src/app/admin/empleado-crear.component.html -->
+<div class="container py-4">
+  <h3 class="mb-3"><i class="bi bi-person-plus-fill me-2"></i>Registrar Nuevo Empleado</h3>
+
+  <form #f="ngForm" (ngSubmit)="enviar(f)" novalidate>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Nombre</label>
+        <input class="form-control" name="nombre" [(ngModel)]="nombre" required />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Correo</label>
+        <input class="form-control" type="email" name="correo" [(ngModel)]="correo" required />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Teléfono</label>
+        <input class="form-control" name="telefono" [(ngModel)]="telefono" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Rol</label>
+        <select class="form-select" name="rolCodigo" [(ngModel)]="rolCodigo" required>
+          <option value="MODERADOR">MODERADOR</option>
+          <option value="LOGISTICA">LOGISTICA</option>
+          <option value="ADMIN">ADMIN</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Contraseña</label>
+        <input class="form-control" type="password" name="password" [(ngModel)]="contrasena" required minlength="4" />
+      </div>
+    </div>
+
+    <div class="mt-3 d-flex gap-2">
+      <button class="btn btn-primary" [disabled]="f.invalid || loading">
+        {{ loading ? 'Guardando...' : 'Guardar' }}
+      </button>
+      <a class="btn btn-outline-secondary" [routerLink]="['/admin/empleados']">Cancelar</a>
+    </div>
+
+    <div *ngIf="error" class="text-danger mt-3">{{ error }}</div>
+  </form>
+</div>

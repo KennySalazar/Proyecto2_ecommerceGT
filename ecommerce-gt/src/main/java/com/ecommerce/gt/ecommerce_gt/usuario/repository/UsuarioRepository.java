@@ -1,9 +1,13 @@
 package com.ecommerce.gt.ecommerce_gt.usuario.repository;
 
 import com.ecommerce.gt.ecommerce_gt.usuario.entity.Usuario;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
@@ -17,4 +21,11 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
       """, nativeQuery = true)
   Optional<Usuario> login(@Param("correo") String correo, @Param("password") String password);
 
+  Page<Usuario> findByRol_CodigoIn(List<String> codigos, Pageable pageable);
+
+  long countByRol_CodigoIn(List<String> codigos);
+
+  long countByRol_Codigo(String codigo);
+
+  Page<Usuario> findByRol_Codigo(String codigo, Pageable pageable);
 }

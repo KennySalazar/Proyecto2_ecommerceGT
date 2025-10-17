@@ -1,22 +1,10 @@
 package com.ecommerce.gt.ecommerce_gt.auth.dto;
 
+import lombok.Data;
+
+/** Petición de inicio de sesión. */
+@Data
 public class LoginRequest {
-    private String correo;
-    private String password;
-
-    public String getCorreo() {
-        return correo;
-    }
-
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+  private String correo;
+  private String password;
 }

@@ -1,0 +1,53 @@
+<!-- src/app/admin/empleados-listar.component.html -->
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="m-0"><i class="bi bi-people me-2"></i>Gestión de Personal</h3>
+
+    <div class="btn-group">
+      <a class="btn btn-primary" [routerLink]="['/admin/empleados/crear']">
+        <i class="bi bi-plus-circle me-2"></i> Nuevo Empleado
+      </a>
+    </div>
+  </div>
+
+  <table class="table table-sm">
+    <thead>
+      <tr>
+        <th>ID</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Rol</th><th>Estado</th><th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let e of empleados">
+        <td>{{ e.id }}</td>
+        <td>{{ e.nombre }}</td>
+        <td>{{ e.correo }}</td>
+        <td>{{ e.telefono }}</td>
+        <td><span class="badge text-bg-secondary">{{ e.rol }}</span></td>
+        <td>
+          <span class="badge" [ngClass]="e.activo ? 'text-bg-success' : 'text-bg-danger'">
+            {{ e.activo ? 'Activo' : 'Inactivo' }}
+          </span>
+        </td>
+        <td>
+          <button class="btn btn-outline-secondary btn-sm" disabled>
+            <i class="bi bi-pencil"></i>
+          </button>
+        </td>
+      </tr>
+      <tr *ngIf="empleados.length === 0">
+        <td colspan="7" class="text-center text-muted">Sin registros</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-end gap-2">
+    <button class="btn btn-outline-secondary btn-sm" (click)="prev()" [disabled]="pagina===0">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <button class="btn btn-outline-secondary btn-sm" (click)="next()" [disabled]="pagina+1>=totalPaginas">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+
+  <div class="text-muted small mt-2">Página {{ pagina + 1 }} / {{ totalPaginas }}</div>
+</div>
