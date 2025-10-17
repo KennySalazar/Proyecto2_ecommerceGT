@@ -29,27 +29,19 @@ export class LoginComponent {
     this.auth.login({ correo: this.correo, password: this.password }).subscribe({
       next: (resp) => {
         this.loading = false;
+        this.auth.guardarSesion(resp); // ← guarda token, rol y nombre
 
-        // Guardar token y rol
-        this.auth.guardarSesion(resp);
-
-        // Unificar nombre de campo del rol
-        const rol = (resp.rolCodigo ?? resp.rol ?? 'COMUN');
-
-        // Navegación por rol
+        // redirección por rol (si tu backend devuelve `rol` o `rolCodigo`)
+        const rol = resp.rolCodigo ?? resp.rol ?? 'COMUN';
         switch (rol) {
           case 'ADMIN':
-            this.router.navigateByUrl('/admin/empleados');
-            break;
+            this.router.navigateByUrl('/admin/empleados'); break;
           case 'MODERADOR':
-            this.router.navigateByUrl('/moderador/solicitudes');
-            break;
+            this.router.navigateByUrl('/moderador/solicitudes'); break;
           case 'LOGISTICA':
-            this.router.navigateByUrl('/logistica/pendientes');
-            break;
-          default: // COMUN
-            this.router.navigateByUrl('/inicio');
-            break;
+            this.router.navigateByUrl('/logistica/pendientes'); break;
+          default:
+            this.router.navigateByUrl('/inicio'); break;
         }
       },
       error: (err) => {
@@ -58,4 +50,8 @@ export class LoginComponent {
       }
     });
   }
+  ngOnInit() {
+  // para evitar que un token viejo cause problemas en el login
+  localStorage.removeItem('token');
+}
 }
