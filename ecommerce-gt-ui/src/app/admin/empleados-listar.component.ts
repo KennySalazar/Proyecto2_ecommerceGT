@@ -1,4 +1,3 @@
-// src/app/admin/empleados-listar.component.ts
 import { Component, OnInit, inject,  OnDestroy} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -23,18 +22,18 @@ export class EmpleadosListarComponent implements OnInit, OnDestroy {
   total = 0;
   totalPaginas = 0;
 
-  // filtros
+  
   nombre = '';
   rol: 'TODOS'|'ADMIN'|'MODERADOR'|'LOGISTICA'|'COMUN' = 'TODOS';
 
-  // 👇 subjects para el debounce y destrucción
+  
   private nombreInput$ = new Subject<string>();
   private destroy$ = new Subject<void>();
 
   ngOnInit() {
     this.cargar();
 
-    // cuando el usuario escribe, esperamos 300ms y filtramos
+   
     this.nombreInput$
       .pipe(
         debounceTime(300),
@@ -53,12 +52,12 @@ export class EmpleadosListarComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // llamado por el (ngModelChange) del input
+  
   onNombreChange(valor: string) {
     this.nombreInput$.next(valor);
   }
 
-  // llamado por el (change) del select rol
+  
   onRolChange() {
     this.pagina = 0;
     this.cargar();
@@ -74,7 +73,7 @@ export class EmpleadosListarComponent implements OnInit, OnDestroy {
       });
   }
 
-  buscar() {            // (si dejas el botón "Buscar")
+  buscar() {           
     this.pagina = 0;
     this.cargar();
   }

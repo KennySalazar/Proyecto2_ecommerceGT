@@ -46,28 +46,28 @@ public class AdministradorService {
     }
 
     public Page<EmpleadoResponse> listarEmpleados(int pagina, int tamanio, String nombre, String rol) {
-    Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("id").descending());
 
-    Page<Usuario> empleados;
+        Page<Usuario> empleados;
 
-    boolean tieneNombre = (nombre != null && !nombre.isBlank());
-    boolean tieneRol     = (rol != null && !rol.isBlank() && !"TODOS".equalsIgnoreCase(rol));
+        boolean tieneNombre = (nombre != null && !nombre.isBlank());
+        boolean tieneRol = (rol != null && !rol.isBlank() && !"TODOS".equalsIgnoreCase(rol));
 
-    if (tieneRol && tieneNombre) {
-        empleados = usuarioRepositorio.findByRol_CodigoAndNombreContainingIgnoreCase(rol, nombre, pageable);
-    } else if (tieneRol) {
-        empleados = usuarioRepositorio.findByRol_Codigo(rol, pageable);
-    } else if (tieneNombre) {
-        empleados = usuarioRepositorio.findByRol_CodigoInAndNombreContainingIgnoreCase(
-            List.of("MODERADOR", "LOGISTICA", "ADMIN", "COMUN"), nombre, pageable);
-    } else {
-        empleados = usuarioRepositorio.findByRol_CodigoIn(
-            List.of("MODERADOR", "LOGISTICA", "ADMIN", "COMUN"), pageable);
-    }
+        if (tieneRol && tieneNombre) {
+            empleados = usuarioRepositorio.findByRol_CodigoAndNombreContainingIgnoreCase(rol, nombre, pageable);
+        } else if (tieneRol) {
+            empleados = usuarioRepositorio.findByRol_Codigo(rol, pageable);
+        } else if (tieneNombre) {
+            empleados = usuarioRepositorio.findByRol_CodigoInAndNombreContainingIgnoreCase(
+                    List.of("MODERADOR", "LOGISTICA", "ADMIN", "COMUN"), nombre, pageable);
+        } else {
+            empleados = usuarioRepositorio.findByRol_CodigoIn(
+                    List.of("MODERADOR", "LOGISTICA", "ADMIN", "COMUN"), pageable);
+        }
 
-    return empleados.map(u -> new EmpleadoResponse(
-        u.getId(), u.getNombre(), u.getCorreo(), u.getTelefono(),
-        u.getRol().getCodigo(), u.getEstaActivo()));
+        return empleados.map(u -> new EmpleadoResponse(
+                u.getId(), u.getNombre(), u.getCorreo(), u.getTelefono(),
+                u.getRol().getCodigo(), u.getEstaActivo()));
     }
 
     public void cambiarEstado(Integer id, boolean activo) {
@@ -81,8 +81,6 @@ public class AdministradorService {
 
     public Page<Usuario> listarComunes(int pagina, int tamanio) {
         Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("id").descending());
-        // Puedes crear un método en repo: Page<Usuario> findByRol_Codigo(String codigo,
-        // Pageable p);
         Page<Usuario> comunes = usuarioRepositorio.findByRol_Codigo("COMUN", pageable);
         return comunes;
     }

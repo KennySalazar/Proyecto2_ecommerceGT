@@ -1,13 +1,24 @@
-<!-- src/app/app.component.html -->
 <nav class="navbar navbar-dark bg-dark px-3 d-flex justify-content-between align-items-center">
   <a class="navbar-brand m-0 fw-semibold text-light" routerLink="/">E-Commerce·GT</a>
 
-  <div *ngIf="auth.isLoggedIn()" class="d-flex align-items-center gap-2">
-    <button class="btn btn-sm btn-danger" (click)="auth.logout()">
-      Cerrar sesión
-    </button>
+  <div *ngIf="loggedIn" class="d-flex align-items-center gap-2">
+    <button class="btn btn-sm btn-danger" (click)="auth.logout()">Cerrar sesión</button>
   </div>
 </nav>
+
+<div *ngIf="loggedIn && esComun" class="bg-light border-bottom">
+  <div class="container py-2 d-flex flex-wrap gap-2">
+    <a class="btn btn-outline-secondary btn-sm" routerLink="/inicio">
+      <i class="bi bi-shop me-1"></i> Catálogo
+    </a>
+    <a class="btn btn-outline-primary btn-sm" routerLink="/mis-productos">
+      <i class="bi bi-box-seam me-1"></i> Mis productos
+    </a>
+    <a class="btn btn-primary btn-sm" routerLink="/mis-productos/nuevo">
+      <i class="bi bi-plus-circle me-1"></i> Nuevo producto
+    </a>
+  </div>
+</div>
 
 <main class="container-fluid p-3">
   <router-outlet></router-outlet>

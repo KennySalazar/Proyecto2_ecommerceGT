@@ -1,4 +1,3 @@
-// src/app/admin/empleado-crear.component.ts
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -18,7 +17,7 @@ export class EmpleadoCrearComponent {
   nombre = '';
   correo = '';
   telefono = '';
-  contrasena = '';  // <- renombrado
+  contrasena = '';  
   rolCodigo: 'ADMIN'|'MODERADOR'|'LOGISTICA' = 'MODERADOR';
   error = '';
   loading = false;
@@ -31,7 +30,7 @@ export class EmpleadoCrearComponent {
       nombre: this.nombre,
       correo: this.correo,
       telefono: this.telefono,
-      contrasena: this.contrasena,  // <- contrasena
+      contrasena: this.contrasena,  
       rolCodigo: this.rolCodigo
     }).subscribe({
       next: () => {

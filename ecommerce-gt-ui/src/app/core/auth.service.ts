@@ -8,7 +8,6 @@ export interface LoginRequest {
   password: string;
 }
 
-// Ajusta el nombre del campo del rol según tu backend: 'rolCodigo' o 'rol'
 export interface LoginResponse {
   token: string;
   nombre?: string;
@@ -21,7 +20,7 @@ export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  // --- NUEVO: señal reactiva para saber si hay sesión ---
+  
   private _token = signal<string | null>(localStorage.getItem('token'));
   isLoggedIn(): boolean {
   return !!localStorage.getItem('token');
@@ -41,7 +40,7 @@ export class AuthService {
     localStorage.setItem('rol', rol);
     if (resp.nombre) localStorage.setItem('nombre', resp.nombre);
 
-    // --- ACTUALIZA el estado de sesión ---
+    
     this._token.set(resp.token ?? '');
   }
 
@@ -49,13 +48,13 @@ export class AuthService {
     return localStorage.getItem('rol');
   }
 
-  // --- NUEVO: obtener token directamente ---
+ 
   get token(): string | null {
     return this._token();
   }
 
 
-  // --- MODIFICADO: logout funcional con navegación ---
+ 
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('rol');

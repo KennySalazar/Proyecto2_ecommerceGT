@@ -1,4 +1,3 @@
-// src/app/auth/login/login.component.ts
 import { Component, inject } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -29,9 +28,9 @@ export class LoginComponent {
     this.auth.login({ correo: this.correo, password: this.password }).subscribe({
       next: (resp) => {
         this.loading = false;
-        this.auth.guardarSesion(resp); // ← guarda token, rol y nombre
+        this.auth.guardarSesion(resp); 
 
-        // redirección por rol (si tu backend devuelve `rol` o `rolCodigo`)
+        
         const rol = resp.rolCodigo ?? resp.rol ?? 'COMUN';
         switch (rol) {
           case 'ADMIN':
@@ -51,7 +50,7 @@ export class LoginComponent {
     });
   }
   ngOnInit() {
-  // para evitar que un token viejo cause problemas en el login
+ 
   localStorage.removeItem('token');
 }
 }

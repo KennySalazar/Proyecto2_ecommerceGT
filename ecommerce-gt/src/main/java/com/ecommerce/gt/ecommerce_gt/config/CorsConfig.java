@@ -14,9 +14,9 @@ public class CorsConfig {
   @Bean
   public CorsFilter corsFilter() {
     CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOriginPatterns(List.of("http://localhost:4200")); // ó "*", pero con credenciales usa dominios concretos
-    config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
-    config.setAllowedHeaders(List.of("*")); // o explícitamente: "Authorization","Content-Type","X-Requested-With"
+    config.setAllowedOriginPatterns(List.of("http://localhost:4200"));
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+    config.setAllowedHeaders(List.of("*"));
     config.setAllowCredentials(true);
     config.setMaxAge(3600L);
 

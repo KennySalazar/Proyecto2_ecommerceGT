@@ -1,4 +1,3 @@
-// src/app/admin/empleados.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
@@ -13,7 +12,7 @@ export interface SpringPage<T> {
   content: T[];
   totalElements: number;
   totalPages: number;
-  number: number; // página actual
+  number: number; 
   size: number;
 
 }
@@ -39,7 +38,6 @@ export class EmpleadosService {
   }
 
 
-  // IMPORTANTE: tu backend espera 'contrasena'
   crear(body: {
     nombre: string;
     correo: string;

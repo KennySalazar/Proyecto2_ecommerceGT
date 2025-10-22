@@ -39,7 +39,7 @@ public class JwtFiltro extends OncePerRequestFilter {
             String token = auth.substring(7);
             if (jwtUtil.esValido(token)) {
                 String correo = jwtUtil.getCorreo(token);
-                String rol = String.valueOf(jwtUtil.getClaim(token, "rol")); // p.ej. ADMIN/MODERADOR
+                String rol = String.valueOf(jwtUtil.getClaim(token, "rol"));
 
                 var authToken = new UsernamePasswordAuthenticationToken(
                         correo, null, List.of(new SimpleGrantedAuthority("ROLE_" + rol)));
