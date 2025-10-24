@@ -13,14 +13,31 @@ export interface ProductoResponse {
   estadoModeracion: 'PENDIENTE'|'APROBADO'|'RECHAZADO';
   imagenUrl?: string | null;
   vendedorId: number;
+  ratingPromedio?: number;
+  totalResenas?: number;
+  categoriaId?: number;
 }
 
 export interface SpringPage<T> {
+  numberOfElements: number;
   content: T[];
   totalElements: number;
   totalPages: number;
   number: number;
   size: number;
+}
+
+export interface ResenaDTO {
+  usuario: string;         
+  rating: number;          
+  comentario: string;
+  fecha: string;           
+}
+
+export interface ResenasResponse {
+  promedio: number;        
+  total: number;        
+  items: ResenaDTO[];
 }
 export type ProductoCard = ProductoResponse;
 
@@ -60,6 +77,20 @@ export class ProductosService {
     mis(pagina = 0, tamanio = 12) {
     return this.listarMisProductos(pagina, tamanio);
     }
+
+    obtenerMio(id: number) {
+      return this.http.get<ProductoResponse>(`${this.base}/mis/${id}`);
+    }
+
+    
+  obtenerResenas(productoId: number) {
+    return this.http.get<ResenasResponse>(`${this.base}/${productoId}/resenas`);
+  }
+
+  
+  crearResena(productoId: number, payload: { rating: number; comentario: string }) {
+    return this.http.post(`${this.base}/${productoId}/resenas`, payload);
+  }
 
   
 }

@@ -17,7 +17,6 @@ public class ProductoController {
     private final ProductoService service;
     private final JwtUtil jwt;
 
-    // --------- Público (catálogo) ---------
     @GetMapping("/publico")
     public ResponseEntity<Page<ProductoResponse>> publico(
             @RequestParam(defaultValue = "0") int pagina,
@@ -25,7 +24,6 @@ public class ProductoController {
         return ResponseEntity.ok(service.listarPublico(pagina, tamanio));
     }
 
-    // --------- Mis productos (vendedor común) ---------
     @GetMapping("/mis")
     public ResponseEntity<Page<ProductoResponse>> mis(
             @RequestHeader("Authorization") String auth,
@@ -52,5 +50,13 @@ public class ProductoController {
             @RequestPart(value = "imagen", required = false) MultipartFile nuevaImagen) {
         Integer userId = jwt.getUserIdFromHeader(auth);
         return ResponseEntity.ok(service.actualizar(id, userId, dto, nuevaImagen));
+    }
+
+    @GetMapping("/mis/{id}")
+    public ResponseEntity<ProductoResponse> obtenerMio(
+            @RequestHeader("Authorization") String auth,
+            @PathVariable Integer id) {
+        Integer userId = jwt.getUserIdFromHeader(auth);
+        return ResponseEntity.ok(service.obtenerMio(userId, id));
     }
 }

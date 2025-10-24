@@ -7,7 +7,6 @@ export interface EmpleadoFila {
   rol: 'ADMIN'|'MODERADOR'|'LOGISTICA'|'COMUN'; activo: boolean;
 }
 
-// *** Estructura que devuelve Spring Data Page ***
 export interface SpringPage<T> {
   content: T[];
   totalElements: number;

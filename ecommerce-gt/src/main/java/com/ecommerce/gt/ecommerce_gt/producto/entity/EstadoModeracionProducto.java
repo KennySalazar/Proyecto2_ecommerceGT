@@ -16,7 +16,6 @@ public class EstadoModeracionProducto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    // 'PENDIENTE','APROBADO','RECHAZADO'
     @Column(name = "codigo", nullable = false, unique = true, length = 20)
     private String codigo;
 

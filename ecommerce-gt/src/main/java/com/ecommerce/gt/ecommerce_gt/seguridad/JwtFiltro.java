@@ -35,14 +35,23 @@ public class JwtFiltro extends OncePerRequestFilter {
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (auth != null && auth.startsWith("Bearer ")) {
-            String token = auth.substring(7);
+
+        if (auth != null && auth.startsWith("Bearer ")
+                && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            String token = auth.substring(7).trim();
+
             if (jwtUtil.esValido(token)) {
                 String correo = jwtUtil.getCorreo(token);
-                String rol = String.valueOf(jwtUtil.getClaim(token, "rol"));
+                Object rolObj = jwtUtil.getClaim(token, "rol");
+                String rol = (rolObj == null) ? "COMUN" : rolObj.toString().trim();
+                if (rol.startsWith("ROLE_"))
+                    rol = rol.substring("ROLE_".length());
+                rol = rol.toUpperCase();
 
                 var authToken = new UsernamePasswordAuthenticationToken(
                         correo, null, List.of(new SimpleGrantedAuthority("ROLE_" + rol)));
+
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }

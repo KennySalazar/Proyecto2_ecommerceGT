@@ -59,7 +59,7 @@ public class JwtUtil {
     }
 
     private JwtParser parser() {
-        // En 0.11.5 se usa parserBuilder() + setSigningKey(...)
+
         return Jwts.parserBuilder().setSigningKey(key).build();
     }
 
@@ -82,7 +82,6 @@ public class JwtUtil {
         return getCorreo(token);
     }
 
-    /** Acepta 'Bearer xxx' o el token en crudo y devuelve sólo el token. */
     public String resolveToken(String authHeaderOrToken) {
         if (authHeaderOrToken == null) {
             throw new IllegalArgumentException("Authorization header/token es null");
@@ -112,10 +111,19 @@ public class JwtUtil {
     public Integer getUserIdFromHeader(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer "))
             return null;
-        var token = authHeader.substring(7);
+        String token = authHeader.substring(7).trim();
+
         Object id = getClaim(token, "userId");
         if (id == null)
+            id = getClaim(token, "id");
+        if (id == null)
             return null;
-        return Integer.valueOf(id.toString());
+
+        try {
+            return Integer.parseInt(id.toString());
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
+
 }

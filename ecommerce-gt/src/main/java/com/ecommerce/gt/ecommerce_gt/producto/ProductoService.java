@@ -25,6 +25,7 @@ public class ProductoService {
     private final EstadoModeracionProductoRepository estadoRepo;
     private final ProductoImagenRepository imgRepo;
     private final UsuarioRepository usuarioRepo;
+    private final ProductoReviewRepository reviewRepo;
 
     private final FilesStorageService storage;
 
@@ -105,6 +106,8 @@ public class ProductoService {
 
     private ProductoResponse toResponse(Producto p) {
         var img = imgRepo.findFirstByProductoIdOrderByIdDesc(p.getId()).orElse(null);
+        Double avg = reviewRepo.avgByProducto(p.getId());
+        int cnt = reviewRepo.countByProductoId(p.getId());
 
         String imageUrl = null;
         if (img != null) {
@@ -122,6 +125,18 @@ public class ProductoService {
                 p.getCategoria().getNombre(),
                 p.getEstadoMod().getCodigo(),
                 imageUrl,
-                p.getVendedor().getId());
+                p.getVendedor().getId(),
+                avg == null ? 0.0 : avg,
+                cnt,
+                p.getCategoria().getId());
+
+    }
+
+    public ProductoResponse obtenerMio(Integer vendedorId, Integer id) {
+        var p = productoRepo.findById(id).orElseThrow();
+        if (!p.getVendedor().getId().equals(vendedorId)) {
+            throw new IllegalArgumentException("No puedes ver productos de otro vendedor");
+        }
+        return toResponse(p);
     }
 }

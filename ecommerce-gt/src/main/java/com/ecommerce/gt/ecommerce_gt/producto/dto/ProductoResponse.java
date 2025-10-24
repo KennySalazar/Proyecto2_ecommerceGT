@@ -18,4 +18,7 @@ public class ProductoResponse {
     private String estadoModeracion;
     private String imageUrl;
     private Integer vendedorId;
+    private Double ratingPromedio;
+    private Integer totalResenas;
+    private Integer categoriaId;
 }

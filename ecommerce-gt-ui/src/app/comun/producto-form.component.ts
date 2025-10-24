@@ -35,10 +35,13 @@ export class ProductoFormComponent {
   };
   imagenFile?: File;
 
+  backendOrigin = environment.backendOrigin ?? environment.apiBase.replace(/\/api\/?$/, '');
+
   ngOnInit(){
     this.id = Number(this.route.snapshot.paramMap.get('id')) || undefined;
     if (this.id) this.titulo = 'Editar producto';
 
+    
     this.http.get<any[]>(`${environment.apiBase}/catalogos/categorias`).subscribe({
       next: res => this.categorias = res,
       error: _ => this.categorias = [
@@ -47,6 +50,23 @@ export class ProductoFormComponent {
         {id:5,nombre:'Decoración'},{id:6,nombre:'Otro'},
       ]
     });
+
+    
+    if (this.id) {
+    this.svc.obtenerMio(this.id).subscribe(p => {
+      this.form = {
+        nombre: p.nombre,
+        descripcion: p.descripcion,
+        precioCents: p.precioCents,
+        stock: p.stock,
+        estadoArticulo: p.estadoArticulo,
+        categoriaId: (p as any).categoriaId ?? this.form.categoriaId
+      };
+
+  const rel = (p as any).imagenUrl ?? (p as any).imageUrl ?? null;
+  this.preview = rel ? (this.backendOrigin + rel) : undefined;
+});
+    }
   }
 
   onFile(e: any){
@@ -61,7 +81,6 @@ export class ProductoFormComponent {
   guardar(){
     this.cargando = true;
 
-   
     if (!this.form.nombre || !this.form.descripcion || this.form.precioCents<=0 || this.form.stock<1) {
       this.cargando=false; alert('Completa los campos obligatorios'); return;
     }

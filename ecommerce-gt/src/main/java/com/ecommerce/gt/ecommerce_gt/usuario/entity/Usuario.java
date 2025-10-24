@@ -1,6 +1,7 @@
 package com.ecommerce.gt.ecommerce_gt.usuario.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Setter
 @NoArgsConstructor
 @Entity
+@AllArgsConstructor
 @Table(name = "usuarios", schema = "ecommerce")
 public class Usuario {
     @Id
@@ -31,4 +33,8 @@ public class Usuario {
 
     @Column(name = "esta_activo")
     private Boolean estaActivo;
+
+    public Usuario(Integer id) {
+        this.id = id;
+    }
 }

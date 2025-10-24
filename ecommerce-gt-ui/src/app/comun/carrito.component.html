@@ -1,0 +1,214 @@
+<div class="container py-4">
+  <div class="d-flex align-items-center mb-3">
+    <h4 class="m-0"><i class="bi bi-cart-check me-2"></i> Carrito de compras</h4>
+    <button class="btn btn-outline-danger ms-auto" (click)="vaciar()" [disabled]="!data || data.items.length===0">
+      <i class="bi bi-trash3 me-1"></i> Vaciar
+    </button>
+  </div>
+
+  <div *ngIf="cargando" class="text-center py-5">
+    <div class="spinner-border"></div>
+  </div>
+
+  <div *ngIf="data && data.items.length===0" class="alert alert-info">
+    Tu carrito está vacío.
+  </div>
+
+  <div class="row g-3" *ngIf="data && data.items.length>0">
+    <div class="col-12 col-lg-8">
+      <div class="card shadow-sm">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item" *ngFor="let it of data.items">
+            <div class="d-flex">
+              <img *ngIf="imgSrc(it) as src"
+                  [src]="src"
+                  class="rounded me-3"
+                  style="width:80px;height:80px;object-fit:cover;">
+              <div class="flex-grow-1">
+                <div class="fw-semibold">{{ it.nombre }}</div>
+                <div class="text-muted small">{{ asQ(it.precio) }} · Subtotal: <b>{{ asQ(it.subtotal) }}</b></div>
+<div class="text-muted small">
+  Quedan {{ it.disponible }} en stock
+</div>
+
+<div class="mt-2 d-flex align-items-center gap-2">
+  <button class="btn btn-sm btn-outline-secondary" (click)="dec(it)"><i class="bi bi-dash"></i></button>
+  <span class="px-2">{{ it.cantidad }}</span>
+  <button class="btn btn-sm btn-outline-secondary"
+          (click)="inc(it)"
+          [disabled]="it.disponible === 0">
+    <i class="bi bi-plus"></i>
+  </button>
+  <button class="btn btn-sm btn-outline-danger ms-auto" (click)="remove(it)">
+    <i class="bi bi-x-lg"></i>
+  </button>
+</div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="fw-semibold">Total</span>
+            <span class="fw-bold fs-5">{{ asQ(data.total) }}</span>
+          </div>
+          <button class="btn btn-primary w-100" (click)="abrirPago()" [disabled]="!data || data.items.length===0">
+            <i class="bi bi-credit-card me-1"></i> Pagar ahora
+          </button>
+
+          <div class="modal fade show" tabindex="-1" style="display:block; background:rgba(0,0,0,.35);" *ngIf="showPago">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-credit-card me-2"></i> Método de pago</h5>
+        <button type="button" class="btn-close" (click)="cerrarPago()"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- GUARDADA/NUEVA -->
+        <ul class="nav nav-tabs mb-3">
+          <li class="nav-item" *ngIf="tarjetas.length">
+            <button class="nav-link" [class.active]="modo==='guardada'" (click)="modo='guardada'">
+              Tarjetas guardadas
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" [class.active]="modo==='nueva'" (click)="modo='nueva'">
+              Nueva tarjeta
+            </button>
+          </li>
+        </ul>
+
+        <!-- TARJETAS GUARDADAS-->
+        <div *ngIf="modo==='guardada'">
+          <div *ngIf="!tarjetas.length" class="alert alert-info">
+            No tienes tarjetas guardadas. Ingresa una nueva.
+          </div>
+
+          <div class="list-group" *ngIf="tarjetas.length">
+            <label class="list-group-item" *ngFor="let t of tarjetas">
+              <input class="form-check-input me-2" type="radio"
+                     name="tg" [value]="t.id" [(ngModel)]="tarjetaGuardadaId">
+              <span class="badge bg-secondary me-2">{{ t.marca }}</span>
+              **** **** **** {{ t.ultimos4 }}
+              <span class="text-muted ms-2">Vence {{ t.expiracionMes }}/{{ t.expiracionAnio }}</span>
+              <div class="small text-muted">Titular: {{ t.titular }}</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- NUEVA TARJETA -->
+        <div *ngIf="modo==='nueva'">
+          <div class="mb-3">
+            <label class="form-label">Número de tarjeta</label>
+            <input class="form-control" [(ngModel)]="formNueva.numero" placeholder="4111 1111 1111 1111">
+            <div class="form-text">Solo se usará para obtener los últimos 4.</div>
+          </div>
+
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label class="form-label">Marca</label>
+              <select class="form-select" [(ngModel)]="formNueva.marca">
+                <option>VISA</option>
+                <option>MASTERCARD</option>
+                <option>AMEX</option>
+              </select>
+            </div>
+            <div class="col-3 mb-3">
+              <label class="form-label">Mes</label>
+              <input class="form-control" type="number" min="1" max="12" [(ngModel)]="formNueva.mes" placeholder="MM">
+            </div>
+            <div class="col-3 mb-3">
+              <label class="form-label">Año</label>
+              <input class="form-control" type="number" min="2024" max="2100" [(ngModel)]="formNueva.anio" placeholder="YYYY">
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Titular</label>
+            <input class="form-control" [(ngModel)]="formNueva.titular" placeholder="Como aparece en la tarjeta">
+          </div>
+
+          <div class="form-check">
+            <input id="guardar" class="form-check-input" type="checkbox" [(ngModel)]="formNueva.guardar">
+            <label for="guardar" class="form-check-label">Guardar esta tarjeta para futuras compras</label>
+          </div>
+
+          <div *ngIf="!nuevaValida" class="alert alert-warning py-2 mt-3">
+            Completa los datos de la tarjeta para continuar.
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" (click)="cerrarPago()">Cancelar</button>
+        <button class="btn btn-primary" (click)="pagar()"
+                [disabled]="modo==='nueva' && !nuevaValida">
+          Pagar
+        </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div *ngIf="alerta.show">
+  <div class="modal-backdrop fade show" style="z-index:1060; background:rgba(0,0,0,0.4);"></div>
+  <div class="modal fade show d-block animate__animated animate__fadeInDown" tabindex="-1" style="z-index:1070;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg"
+           [ngClass]="{
+             'border-success': alerta.tipo==='success',
+             'border-danger': alerta.tipo==='error',
+             'border-info': alerta.tipo==='info'
+           }">
+        <div class="modal-header"
+             [ngClass]="{
+               'bg-success text-white': alerta.tipo==='success',
+               'bg-danger text-white': alerta.tipo==='error',
+               'bg-info text-white': alerta.tipo==='info'
+             }">
+          <h5 class="modal-title">{{ alerta.titulo }}</h5>
+        </div>
+        <div class="modal-body">
+          <p class="m-0 fs-6">{{ alerta.mensaje }}</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary px-4" (click)="cerrarAlerta()">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+ 
+<div class="modal-backdrop fade show" *ngIf="confirmOpen" style="z-index:1050;"></div>
+<div class="modal fade show d-block" tabindex="-1" *ngIf="confirmOpen" style="z-index:1060;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title">Confirmar</h6>
+        <button type="button" class="btn-close" (click)="confirmNo()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="m-0">{{ confirmText }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" (click)="confirmNo()">Cancelar</button>
+        <button class="btn btn-danger" (click)="confirmYes()">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+          <div class="text-muted small mt-2">
+            * Método de pago: tarjeta. Entrega estimada en 5 días.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

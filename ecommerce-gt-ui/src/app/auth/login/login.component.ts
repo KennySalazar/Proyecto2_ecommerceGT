@@ -32,6 +32,7 @@ export class LoginComponent {
 
         
         const rol = resp.rolCodigo ?? resp.rol ?? 'COMUN';
+        console.log('Rol del usuario:', rol);
         switch (rol) {
           case 'ADMIN':
             this.router.navigateByUrl('/admin/empleados'); break;

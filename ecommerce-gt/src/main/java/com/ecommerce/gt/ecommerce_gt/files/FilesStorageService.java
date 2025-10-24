@@ -10,7 +10,7 @@ import java.util.UUID;
 @Service
 public class FilesStorageService {
 
-    private final Path root = Paths.get("uploads"); // carpeta en el proyecto
+    private final Path root = Paths.get("uploads");
 
     public FilesStorageService() {
         try {

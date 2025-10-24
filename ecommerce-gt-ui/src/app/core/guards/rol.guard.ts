@@ -11,7 +11,7 @@ export const RolGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
 
   if (rol && permitido.includes(rol)) return true;
 
-  // si no coincide el rol, lo mandamos a su inicio por rol
+  
   switch (rol) {
     case 'ADMIN':     router.navigateByUrl('/admin/empleados'); break;
     case 'MODERADOR': router.navigateByUrl('/moderador/solicitudes'); break;

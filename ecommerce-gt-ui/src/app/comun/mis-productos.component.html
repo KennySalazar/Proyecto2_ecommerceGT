@@ -35,6 +35,7 @@
             {{ p.categoria }} · {{ p.estadoArticulo }}
           </div>
           <h6 class="card-title text-truncate" [title]="p.nombre">{{ p.nombre }}</h6>
+          <h6 class="card-title text-truncate" [title]="p.stock"> En stock: {{ p.stock }}</h6>
           <div class="fw-semibold">{{ toQ(p.precioCents) }}</div>
           
         </div>

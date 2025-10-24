@@ -8,7 +8,10 @@ import { EmpleadoCrearComponent } from './admin/empleado-crear.component';
 import { CatalogoComponent } from './comun/catalogo.component';
 import { MisProductosComponent } from './comun/mis-productos.component';
 import { ProductoFormComponent } from './comun/producto-form.component';
+import { CarritoComponent } from './comun/carrito.component';
 import { RolGuard } from './core/guards/rol.guard';
+import { MisComprasComponent } from './comun/mis-compras.component';
+
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -31,6 +34,11 @@ export const routes: Routes = [
   { path: 'mis-productos', component: MisProductosComponent},
   { path: 'mis-productos/nuevo', component: ProductoFormComponent },
   { path: 'mis-productos/:id/editar', component: ProductoFormComponent },
+
+   { path: 'carrito', component: CarritoComponent },
+   { path: 'mis-compras', component: MisComprasComponent },
+
+  
 
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: '**', redirectTo: 'login' }

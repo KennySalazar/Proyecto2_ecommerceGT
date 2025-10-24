@@ -11,7 +11,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.http.HttpMethod;
 
 /**
- * Configuración principal de Spring Security para JWT (stateless).
+ * Configuración principal de Spring Security para JWT.
  */
 @Configuration
 @RequiredArgsConstructor
@@ -24,16 +24,24 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> {
+                .cors(c -> {
                 })
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/catalogos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/productos/publico").permitAll()
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
 
-                        .requestMatchers("/api/productos/mis/**").hasRole("COMUN")
+                        .requestMatchers(HttpMethod.POST, "/api/carrito/checkout").authenticated()
+                        .requestMatchers("/api/carrito/**").hasRole("COMUN")
 
+                        .requestMatchers("/api/productos/mis/**").hasRole("COMUN")
+                        .requestMatchers("/api/pedidos/**").hasRole("COMUN")
+                        .requestMatchers("/api/usuarios/mis/**").hasRole("COMUN")
+                        .requestMatchers(HttpMethod.GET, "/api/productos/*/resenas/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/productos/*/resenas").hasRole("COMUN")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFiltro, UsernamePasswordAuthenticationFilter.class)
                 .build();
