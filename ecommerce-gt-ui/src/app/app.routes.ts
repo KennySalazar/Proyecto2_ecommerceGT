@@ -14,6 +14,7 @@ import { MisComprasComponent } from './comun/mis-compras.component';
 import { ModeradorSolicitudesComponent } from './moderador/moderador-solicitudes.component';
 import { MisGananciasComponent } from './comun/mis-ganancias.component';
 import { LogisticaPendientesComponent } from './logistica/logistica-pendientes.component';
+import { GananciasAdminComponent } from './admin/ganancias-admin.component';
 
 
 export const routes: Routes = [
@@ -46,6 +47,7 @@ export const routes: Routes = [
    { path: 'admin/empleados/:id/editar', component: EmpleadoCrearComponent },
 
     { path: 'mis-ganancias', component: MisGananciasComponent },
+    { path: 'admin/ganancias', component: GananciasAdminComponent },
 
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: '**', redirectTo: 'login' }

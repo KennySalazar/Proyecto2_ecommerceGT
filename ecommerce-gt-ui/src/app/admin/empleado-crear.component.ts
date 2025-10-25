@@ -26,7 +26,7 @@ export class EmpleadoCrearComponent {
   error = '';
   editId?: number;
 
-   // 🔒 Si es COMUN, el rol queda bloqueado y no editable
+  
   rolBloqueado = false;
 
   ngOnInit() {
@@ -71,7 +71,7 @@ export class EmpleadoCrearComponent {
       body.rolCodigo = this.rolCodigo;
     }
 
-    // Solo incluir contraseña si es creación
+   
     if (!this.editId) {
       body.contrasena = this.contrasena;
     }

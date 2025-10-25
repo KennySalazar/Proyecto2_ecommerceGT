@@ -1,5 +1,6 @@
 package com.ecommerce.gt.ecommerce_gt.carrito.repository;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -13,12 +14,20 @@ import com.ecommerce.gt.ecommerce_gt.carrito.entity.Pedido;
 
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
-    List<Pedido> findByCompradorIdOrderByFechaCreacionDesc(Integer compradorId);
+  List<Pedido> findByCompradorIdOrderByFechaCreacionDesc(Integer compradorId);
 
-    @Query("""
-              select p from Pedido p
-              where p.estadoPedido.codigo = :codigo
-              order by p.fechaCreacion desc
-            """)
-    Page<Pedido> findByEstadoCodigo(@Param("codigo") String codigo, Pageable pageable);
+  @Query("""
+        select p from Pedido p
+        where p.estadoPedido.codigo = :codigo
+        order by p.fechaCreacion desc
+      """)
+  Page<Pedido> findByEstadoCodigo(@Param("codigo") String codigo, Pageable pageable);
+
+  @Query("""
+        select coalesce(sum(p.totalComision), 0)
+        from Pedido p
+        where p.fechaCreacion >= :desde
+          and p.fechaCreacion < :hasta
+      """)
+  Long sumaComisionPorRango(Instant desde, Instant hasta);
 }

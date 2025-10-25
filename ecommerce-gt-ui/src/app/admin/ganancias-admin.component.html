@@ -1,0 +1,24 @@
+<div class="container py-4">
+  <h4><i class="bi bi-cash-coin me-2"></i>Ganancias de la plataforma (5%)</h4>
+
+  <div class="row g-2 align-items-end mb-3">
+    <div class="col-md-3">
+      <label class="form-label">Desde</label>
+      <input type="date" class="form-control" [(ngModel)]="desde">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Hasta</label>
+      <input type="date" class="form-control" [(ngModel)]="hasta">
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100" (click)="filtrar()">Filtrar</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="display-5 fw-bold">{{ total | currency:'GTQ' }}</div>
+      <div class="text-muted">Suma del 5% de todas las ventas del rango.</div>
+    </div>
+  </div>
+</div>
