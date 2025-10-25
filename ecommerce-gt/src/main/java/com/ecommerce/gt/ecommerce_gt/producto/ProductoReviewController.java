@@ -49,11 +49,9 @@ public class ProductoReviewController {
             @RequestBody Map<String, Object> body) {
         Integer uid = jwt.getUserIdFromHeader(auth);
 
-        // debe haber comprado
         if (!pedidoItemRepo.existsByProducto_IdAndPedido_CompradorId(productoId, uid))
             return ResponseEntity.status(403).body(Map.of("message", "Debes comprar el producto para reseñarlo"));
 
-        // una sola reseña por usuario
         if (reviewRepo.existsByProductoIdAndUsuarioId(productoId, uid))
             return ResponseEntity.badRequest().body(Map.of("message", "Ya enviaste una reseña"));
 

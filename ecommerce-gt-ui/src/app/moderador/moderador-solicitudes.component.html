@@ -1,0 +1,108 @@
+<div class="container py-4">
+  <h4 class="mb-3"><i class="bi bi-shield-check me-2"></i>Solicitudes de moderación</h4>
+
+  
+  <div class="d-flex gap-2 mb-3">
+    <button
+      class="btn"
+      [class.btn-primary]="view === 'pendientes'"
+      [class.btn-outline-primary]="view !== 'pendientes'"
+      (click)="cambiarVista('pendientes')">
+      Pendientes
+    </button>
+
+    <button
+      class="btn"
+      [class.btn-primary]="view === 'historial'"
+      [class.btn-outline-primary]="view !== 'historial'"
+      (click)="cambiarVista('historial')">
+      Aprobados / Rechazados
+    </button>
+  </div>
+
+ 
+  <div *ngIf="cargando" class="text-center py-5">
+    <div class="spinner-border"></div>
+  </div>
+
+  
+  <div *ngIf="!cargando && lista.length===0" class="text-muted">
+    {{ view === 'pendientes' ? 'No hay productos pendientes.' : 'No hay productos en el historial.' }}
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-3" *ngFor="let p of lista">
+      <div class="card h-100 shadow-sm">
+        <ng-container *ngIf="fullImg(p) as src; else noimg">
+          <img [src]="src" class="card-img-top" style="object-fit:cover">
+        </ng-container>
+        <ng-template #noimg>
+          <div class="bg-light d-flex align-items-center justify-content-center" style="height:180px;">
+            <i class="bi bi-image fs-1 text-muted"></i>
+          </div>
+        </ng-template>
+
+        <div class="card-body">
+          <div class="small text-muted">{{ p.categoria }} · {{ p.vendedorNombre }}</div>
+          <div class="fw-semibold text-truncate" [title]="p.nombre">{{ p.nombre }}</div>
+          <div class="small">Stock: {{ p.stock }}</div>
+          <div class="fw-bold mt-1">{{ (p.precioCents||0) | currency:'GTQ' }}</div>
+
+         
+          <div *ngIf="view === 'historial'" class="mt-2">
+            <span class="badge"
+                [class.bg-success]="p.estadoMod === 'APROBADO'"
+                [class.bg-danger]="p.estadoMod === 'RECHAZADO'"
+                [class.bg-secondary]="p.estadoMod !== 'APROBADO' && p.estadoMod !== 'RECHAZADO'">
+            {{ p.estadoMod }}
+            </span>
+          </div>
+
+            <div *ngIf="p.estadoMod === 'RECHAZADO' && p.comentarioRechazo" class="mt-2 small text-danger">
+    <i class="bi bi-info-circle me-1"></i>
+    Motivo: {{ p.comentarioRechazo }}
+  </div>
+        </div>
+
+       
+        <div class="card-footer d-flex gap-2 bg-white" *ngIf="view === 'pendientes'">
+          <button class="btn btn-success btn-sm" (click)="aprobar(p)">
+            <i class="bi bi-check2"></i> Aprobar
+          </button>
+          <button class="btn btn-outline-danger btn-sm" (click)="abrirRechazo(p)">
+            <i class="bi bi-x"></i> Rechazar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end gap-2 mt-3">
+    <button class="btn btn-outline-secondary btn-sm" (click)="prev()" [disabled]="pagina===0">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <button class="btn btn-outline-secondary btn-sm" (click)="next()" [disabled]="pagina+1>=totalPaginas">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+</div>
+
+
+<div class="modal fade show" tabindex="-1" *ngIf="showRechazar" style="display:block;background:rgba(0,0,0,.2);">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <strong>Rechazar producto</strong>
+        <button class="btn-close" (click)="cerrarRechazo()"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label">Motivo</label>
+        <textarea class="form-control" rows="3" [(ngModel)]="motivoRechazo"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cerrarRechazo()">Cancelar</button>
+        <button class="btn btn-danger" (click)="rechazar()">Rechazar</button>
+      </div>
+    </div>
+  </div>
+</div>

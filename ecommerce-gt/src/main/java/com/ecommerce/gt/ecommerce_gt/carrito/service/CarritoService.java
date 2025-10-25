@@ -2,7 +2,9 @@ package com.ecommerce.gt.ecommerce_gt.carrito.service;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -26,10 +28,12 @@ import com.ecommerce.gt.ecommerce_gt.carrito.repository.PagoRepository;
 import com.ecommerce.gt.ecommerce_gt.carrito.repository.PedidoItemRepository;
 import com.ecommerce.gt.ecommerce_gt.carrito.repository.PedidoRepository;
 import com.ecommerce.gt.ecommerce_gt.carrito.repository.TarjetaGuardadaRepository;
+import com.ecommerce.gt.ecommerce_gt.comun.EmailService;
 import com.ecommerce.gt.ecommerce_gt.producto.ProductoRepository;
 import com.ecommerce.gt.ecommerce_gt.producto.ProductoImagenRepository;
 import com.ecommerce.gt.ecommerce_gt.seguridad.JwtUtil;
 import com.ecommerce.gt.ecommerce_gt.usuario.entity.Usuario;
+import com.ecommerce.gt.ecommerce_gt.usuario.repository.UsuarioRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +53,8 @@ public class CarritoService {
     private final EstadoPedidoRepository estadoPedidoRepo;
     private final JwtUtil jwt;
     private final PagoRepository pagoRepo;
+    private final EmailService email;
+    private final UsuarioRepository usuarioRepo;
 
     /** Obtiene el carrito vigente del usuario o lo crea */
     private Carrito getOrCreate(Integer usuarioId) {
@@ -268,10 +274,82 @@ public class CarritoService {
         c.setEstaVigente(false);
         carritoRepo.save(c);
 
+        enviarCorreoConfirmacion(pedido.getId(), usuarioId);
+
         return pedido.getId();
     }
 
     public List<TarjetaGuardada> tarjetasDe(Integer usuarioId) {
         return tarjetaRepo.findByUsuarioId(usuarioId);
+    }
+
+    private void enviarCorreoConfirmacion(Integer pedidoId, Integer usuarioId) {
+        var usuario = usuarioRepo.findById(usuarioId).orElse(null);
+        if (usuario == null)
+            return;
+
+        var pedido = pedidoRepo.findById(pedidoId).orElseThrow();
+        List<PedidoItem> items = pedidoItemRepo.findByPedidoId(pedidoId);
+        String asunto = "Pedido #" + pedidoId + " confirmado";
+
+        // Formateadores
+        var fmtQ = java.text.NumberFormat.getCurrencyInstance(new Locale("es", "GT"));
+        var fmtFecha = DateTimeFormatter.ofPattern("d MMM yyyy", new Locale("es", "GT"));
+
+        StringBuilder filas = new StringBuilder();
+        for (var it : items) {
+            var nombre = it.getProducto().getNombre();
+            String subtotal = fmtQ.format(it.getSubtotal());
+            String pu = fmtQ.format(it.getPrecioUnitario());
+            filas.append("""
+                        <tr>
+                          <td style="padding:6px 8px">%s</td>
+                          <td style="padding:6px 8px;text-align:center">%d</td>
+                          <td style="padding:6px 8px;text-align:right">%s</td>
+                          <td style="padding:6px 8px;text-align:right">%s</td>
+                        </tr>
+                    """.formatted(nombre, it.getCantidad(), pu, subtotal));
+        }
+
+        String total = fmtQ.format(pedido.getTotalBruto());
+        String comision = fmtQ.format(pedido.getTotalComision());
+        String neto = fmtQ.format(pedido.getTotalNetoVendedores());
+        String entrega = pedido.getFechaEstimadaEntrega() != null
+                ? pedido.getFechaEstimadaEntrega().format(fmtFecha)
+                : "-";
+
+        String html = """
+                    <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111">
+                      <h2 style="margin:0 0 12px">¡Gracias por tu compra, %s!</h2>
+                      <p style="margin:0 0 6px">Tu pedido <b>#%d</b> fue recibido y está <b>en curso</b>.</p>
+                      <p style="margin:0 0 12px">Entrega estimada: <b>%s</b></p>
+
+                      <table width="100%%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;border:1px solid #e5e7eb">
+                        <thead>
+                         <h4 style="margin:0 0 25px">Detalle:</h4>
+                          <tr style="background:#f3f4f6">
+                            <th align="left" style="padding:8px;border-bottom:1px solid #e5e7eb">Producto</th>
+                            <th align="center" style="padding:8px;border-bottom:1px solid #e5e7eb">Cant.</th>
+                            <th align="right" style="padding:8px;border-bottom:1px solid #e5e7eb">P. unitario</th>
+                            <th align="right" style="padding:8px;border-bottom:1px solid #e5e7eb">Subtotal</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          %s
+                        </tbody>
+                      </table>
+                    </div>
+                """
+                .formatted(
+                        usuario.getNombre(),
+                        pedidoId,
+                        entrega,
+                        filas.toString(),
+                        total, comision, neto,
+                        // si tienes FRONT_URL en env/properties, úsalo:
+                        // FRONT_URL + "/mis-compras"
+                        "http://localhost:4200/mis-compras");
+
+        email.enviarHtml(usuario.getCorreo(), asunto, html);
     }
 }

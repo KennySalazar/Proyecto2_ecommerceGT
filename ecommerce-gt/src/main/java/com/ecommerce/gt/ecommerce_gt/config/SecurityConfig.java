@@ -42,6 +42,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/usuarios/mis/**").hasRole("COMUN")
                         .requestMatchers(HttpMethod.GET, "/api/productos/*/resenas/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/productos/*/resenas").hasRole("COMUN")
+
+                        .requestMatchers("/api/moderador/**").hasRole("MODERADOR")
+                        .requestMatchers("/api/ganancias/**").hasRole("COMUN")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFiltro, UsernamePasswordAuthenticationFilter.class)
                 .build();

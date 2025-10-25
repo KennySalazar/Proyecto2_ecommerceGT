@@ -1,6 +1,9 @@
 package com.ecommerce.gt.ecommerce_gt.producto;
 
 import com.ecommerce.gt.ecommerce_gt.producto.entity.Producto;
+
+import java.util.Collection;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,4 +26,13 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
 
     @Query("select p.stock from Producto p where p.id = :id")
     Integer stockRestante(@Param("id") Integer id);
+
+    Page<Producto> findByEstadoModCodigoOrderByCreadoEnAsc(String codigo, Pageable p);
+
+    Page<Producto> findByEstadoModCodigoIn(Collection<String> codigos, Pageable pageable);
+
+    Page<Producto> findByEstadoModCodigoInAndUltimoModeradorId(
+            java.util.Collection<String> estados,
+            Integer ultimoModeradorId,
+            Pageable pageable);
 }

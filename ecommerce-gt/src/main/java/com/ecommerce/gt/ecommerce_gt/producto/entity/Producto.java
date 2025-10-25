@@ -52,4 +52,10 @@ public class Producto {
 
     @Column(name = "actualizado_en", nullable = false)
     private Instant actualizadoEn;
+
+    @Column(name = "ultimo_moderador_id")
+    private Integer ultimoModeradorId;
+
+    @Column(name = "comentario_rechazo")
+    private String comentarioRechazo;
 }

@@ -1,0 +1,68 @@
+<div class="container py-4">
+  <h4 class="mb-3"><i class="bi bi-cash-coin me-2"></i> Mis ganancias</h4>
+
+  <div class="row g-3 mb-3" *ngIf="r">
+    <div class="col-sm-6 col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="text-muted small">Total ganado</div>
+          <div class="fs-5 fw-semibold">{{ asQ(r.totalNeto) }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="text-muted small">Hoy</div>
+          <div class="fs-5 fw-semibold">{{ asQ(r.netoHoy) }}</div>
+          <div class="small text-muted">{{ r.ventasHoy }} ventas</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="text-muted small">Este mes</div>
+          <div class="fs-5 fw-semibold">{{ asQ(r.netoMes) }}</div>
+          <div class="small text-muted">{{ r.ventasMes }} ventas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-4" *ngFor="let it of lista">
+      <div class="card h-100 shadow-sm">
+        <ng-container *ngIf="fullImg(it.imagenUrl) as src; else noimg">
+          <img [src]="src" class="card-img-top" style="object-fit:cover">
+        </ng-container>
+        <ng-template #noimg>
+          <div class="bg-light d-flex align-items-center justify-content-center" style="height:180px;">
+            <i class="bi bi-image text-muted fs-1"></i>
+          </div>
+        </ng-template>
+
+        <div class="card-body">
+          <div class="small text-muted">{{ fFecha(it.fecha) }} · Pedido #{{ it.pedidoId }}</div>
+          <div class="fw-semibold text-truncate" [title]="it.productoNombre">{{ it.productoNombre }}</div>
+          <div class="small">Cantidad: {{ it.cantidad }} · Precio unitario: {{ asQ(it.precioUnitario) }}</div>
+          <div class="small text-muted">Estado: {{ it.estadoPedido }}</div>
+          <div class="mt-2">
+            <div class="small">Subtotal: {{ asQ(it.subtotal) }}</div>
+            <div class="small">Comisión Aplicación (5%): {{ asQ(it.comision) }}</div>
+            <div class="fw-semibold">Tu neto (95%): {{ asQ(it.netoVendedor) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end gap-2 mt-3">
+    <button class="btn btn-outline-secondary btn-sm" (click)="prev()" [disabled]="pagina===0">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <button class="btn btn-outline-secondary btn-sm" (click)="next()" [disabled]="pagina+1>=totalPaginas">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+</div>
