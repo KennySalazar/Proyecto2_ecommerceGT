@@ -1,0 +1,56 @@
+<div class="container py-4">
+  <h4 class="mb-3"><i class="bi bi-truck me-2"></i>Pedidos en curso</h4>
+
+  <div *ngIf="cargando" class="text-center py-5"><div class="spinner-border"></div></div>
+  <div *ngIf="!cargando && lista.length===0" class="text-muted">No hay pedidos en curso.</div>
+
+  <div class="row g-3">
+    <div class="col-md-4" *ngFor="let p of lista">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <div class="small text-muted">#{{ p.id }} · {{ p.estadoCodigo }}</div>
+          <div class="fw-semibold">{{ p.compradorNombre }}</div>
+          <div>Creado: {{ p.fechaCreacion | date:'medium' }}</div>
+          <div class="mb-1">Entrega: <b>{{ p.fechaEstimadaEntrega | date:'mediumDate' }}</b></div>
+          <div class="fw-bold">Total: {{ p.totalBruto | currency:'GTQ' }}</div>
+        </div>
+        <div class="card-footer bg-white d-flex gap-2">
+          <button class="btn btn-outline-secondary btn-sm" (click)="abrirFecha(p)">
+            <i class="bi bi-calendar-event"></i> Reprogramar
+          </button>
+          <button class="btn btn-success btn-sm ms-auto" (click)="entregar(p)">
+            <i class="bi bi-check2-circle"></i> Entregado
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end gap-2 mt-3">
+    <button class="btn btn-outline-secondary btn-sm" (click)="prev()" [disabled]="pagina===0">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <button class="btn btn-outline-secondary btn-sm" (click)="next()" [disabled]="pagina+1>=totalPaginas">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" *ngIf="editId" style="display:block;background:rgba(0,0,0,.2);">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <strong>Reprogramar entrega</strong>
+        <button class="btn-close" (click)="editId=undefined"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label">Nueva fecha</label>
+        <input type="date" class="form-control" [(ngModel)]="nuevaFecha">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="editId=undefined">Cancelar</button>
+        <button class="btn btn-primary" (click)="guardarFecha()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>

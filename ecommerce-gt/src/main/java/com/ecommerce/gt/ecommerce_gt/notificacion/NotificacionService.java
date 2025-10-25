@@ -26,7 +26,6 @@ public class NotificacionService {
         n.setTipo(tipo);
         n.setAsunto(asunto);
         n.setCuerpo(cuerpo);
-        n.setMetadata(metadataJson);
         n = repo.save(n);
 
         usuarios.findById(usuarioId).ifPresent(u -> {

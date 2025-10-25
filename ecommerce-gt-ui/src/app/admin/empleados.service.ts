@@ -46,4 +46,20 @@ export class EmpleadosService {
   }) {
     return this.http.post<EmpleadoFila>(this.base, body);
   }
+
+  get(id: number) {
+  return this.http.get<EmpleadoFila>(`${this.base}/${id}`);
+}
+
+actualizar(id: number, body: {
+  nombre: string;
+  correo: string;
+  telefono?: string;
+  contrasena?: string; 
+  rolCodigo?: 'ADMIN'|'MODERADOR'|'LOGISTICA';
+}) {
+  return this.http.put<EmpleadoFila>(`${this.base}/${id}`, body);
+}
+
+  
 }

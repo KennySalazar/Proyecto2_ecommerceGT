@@ -13,6 +13,7 @@ import { RolGuard } from './core/guards/rol.guard';
 import { MisComprasComponent } from './comun/mis-compras.component';
 import { ModeradorSolicitudesComponent } from './moderador/moderador-solicitudes.component';
 import { MisGananciasComponent } from './comun/mis-ganancias.component';
+import { LogisticaPendientesComponent } from './logistica/logistica-pendientes.component';
 
 
 export const routes: Routes = [
@@ -41,6 +42,8 @@ export const routes: Routes = [
    { path: 'mis-compras', component: MisComprasComponent },
 
    { path: 'moderador/solicitudes', component: ModeradorSolicitudesComponent },
+   { path: 'logistica/pendientes', component: LogisticaPendientesComponent },
+   { path: 'admin/empleados/:id/editar', component: EmpleadoCrearComponent },
 
     { path: 'mis-ganancias', component: MisGananciasComponent },
 

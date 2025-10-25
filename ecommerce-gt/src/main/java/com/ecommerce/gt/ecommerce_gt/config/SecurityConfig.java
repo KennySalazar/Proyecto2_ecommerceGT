@@ -34,6 +34,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/productos/publico").permitAll()
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/api/logistica/**").hasRole("LOGISTICA")
+                        .requestMatchers(HttpMethod.PUT, "/api/logistica/**").hasRole("LOGISTICA")
+                        .requestMatchers(HttpMethod.POST, "/api/logistica/**").hasRole("LOGISTICA")
+
                         .requestMatchers(HttpMethod.POST, "/api/carrito/checkout").authenticated()
                         .requestMatchers("/api/carrito/**").hasRole("COMUN")
 
@@ -45,6 +49,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/moderador/**").hasRole("MODERADOR")
                         .requestMatchers("/api/ganancias/**").hasRole("COMUN")
+
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFiltro, UsernamePasswordAuthenticationFilter.class)
                 .build();

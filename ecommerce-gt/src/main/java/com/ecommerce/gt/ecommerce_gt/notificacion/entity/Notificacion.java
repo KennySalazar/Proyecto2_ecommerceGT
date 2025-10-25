@@ -26,9 +26,6 @@ public class Notificacion {
     @Column(nullable = false, columnDefinition = "text")
     private String cuerpo;
 
-    @Column(columnDefinition = "jsonb")
-    private String metadata;
-
     @Column(nullable = false)
     private boolean enviado = false;
 

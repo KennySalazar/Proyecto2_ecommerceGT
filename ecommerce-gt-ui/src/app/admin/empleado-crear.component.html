@@ -1,5 +1,8 @@
 <div class="container py-4">
-  <h3 class="mb-3"><i class="bi bi-person-plus-fill me-2"></i>Registrar Nuevo Empleado</h3>
+  <h3 class="mb-3">
+    <i class="bi bi-person-plus-fill me-2"></i>
+    {{ esEdicion ? 'Editar Empleado' : 'Registrar Nuevo Empleado' }}
+  </h3>
 
   <form #f="ngForm" (ngSubmit)="enviar(f)" novalidate>
     <div class="row g-3">
@@ -7,31 +10,57 @@
         <label class="form-label">Nombre</label>
         <input class="form-control" name="nombre" [(ngModel)]="nombre" required />
       </div>
+
       <div class="col-md-6">
         <label class="form-label">Correo</label>
         <input class="form-control" type="email" name="correo" [(ngModel)]="correo" required />
       </div>
+
       <div class="col-md-6">
         <label class="form-label">Teléfono</label>
         <input class="form-control" name="telefono" [(ngModel)]="telefono" />
       </div>
-      <div class="col-md-6">
+
+    
+      <div class="col-md-6" *ngIf="rolBloqueado; else rolEditable">
         <label class="form-label">Rol</label>
-        <select class="form-select" name="rolCodigo" [(ngModel)]="rolCodigo" required>
-          <option value="MODERADOR">MODERADOR</option>
-          <option value="LOGISTICA">LOGISTICA</option>
-          <option value="ADMIN">ADMIN</option>
-        </select>
+        <input class="form-control" [value]="'COMUN'" disabled />
+        <div class="form-text">El rol de un usuario común no se puede modificar.</div>
       </div>
+      <ng-template #rolEditable>
+        <div class="col-md-6">
+          <label class="form-label">Rol</label>
+          <select
+            class="form-select"
+            name="rolCodigo"
+            [(ngModel)]="rolCodigo"
+            [required]="!rolBloqueado">
+            <option value="MODERADOR">MODERADOR</option>
+            <option value="LOGISTICA">LOGISTICA</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+        </div>
+      </ng-template>
+
       <div class="col-md-6">
-        <label class="form-label">Contraseña</label>
-        <input class="form-control" type="password" name="password" [(ngModel)]="contrasena" required minlength="4" />
+        <label class="form-label">
+          Contraseña
+          <small *ngIf="esEdicion" class="text-muted">(no editable en edición)</small>
+        </label>
+        <input
+          class="form-control"
+          type="password"
+          name="password"
+          [(ngModel)]="contrasena"
+          [required]="!esEdicion"
+          minlength="4"
+          [disabled]="esEdicion" />
       </div>
     </div>
 
     <div class="mt-3 d-flex gap-2">
       <button class="btn btn-primary" [disabled]="f.invalid || loading">
-        {{ loading ? 'Guardando...' : 'Guardar' }}
+        {{ loading ? 'Guardando...' : (esEdicion ? 'Actualizar' : 'Guardar') }}
       </button>
       <a class="btn btn-outline-secondary" [routerLink]="['/admin/empleados']">Cancelar</a>
     </div>

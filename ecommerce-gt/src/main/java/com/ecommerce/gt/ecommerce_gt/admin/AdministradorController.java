@@ -21,14 +21,12 @@ public class AdministradorController {
 
     @GetMapping
     public ResponseEntity<Page<EmpleadoResponse>> listar(
-        @RequestParam(defaultValue = "0") int pagina,
-        @RequestParam(defaultValue = "10") int tamanio,
-        @RequestParam(required = false) String nombre,
-        @RequestParam(required = false, defaultValue = "TODOS") String rol
-    ) {
-    return ResponseEntity.ok(servicio.listarEmpleados(pagina, tamanio, nombre, rol));
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "10") int tamanio,
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false, defaultValue = "TODOS") String rol) {
+        return ResponseEntity.ok(servicio.listarEmpleados(pagina, tamanio, nombre, rol));
     }
-
 
     @PatchMapping("/{id}/estado")
     public ResponseEntity<Void> cambiarEstado(@PathVariable Integer id, @RequestParam boolean activo) {
@@ -46,5 +44,17 @@ public class AdministradorController {
                         u.getId(), u.getNombre(), u.getCorreo(), u.getTelefono(),
                         u.getRol().getCodigo(), u.getEstaActivo()));
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EmpleadoResponse> obtener(@PathVariable Integer id) {
+        return ResponseEntity.ok(servicio.obtenerEmpleado(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> actualizar(@PathVariable Integer id,
+            @RequestBody EmpleadoActualizarRequest req) {
+        servicio.actualizarEmpleado(id, req);
+        return ResponseEntity.noContent().build();
     }
 }

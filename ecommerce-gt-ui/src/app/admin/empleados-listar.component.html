@@ -68,9 +68,11 @@
               </span>
             </td>
             <td>
-              <button class="btn btn-outline-secondary btn-sm" disabled>
-                <i class="bi bi-pencil"></i>
-              </button>
+            <button
+              class="btn btn-outline-secondary btn-sm"
+              [routerLink]="['/admin/empleados', e.id, 'editar']">
+              <i class="bi bi-pencil"></i>
+            </button>
             </td>
           </tr>
           <tr *ngIf="empleados.length === 0">

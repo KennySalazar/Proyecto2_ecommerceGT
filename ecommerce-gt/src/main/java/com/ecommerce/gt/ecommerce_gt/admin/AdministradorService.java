@@ -84,4 +84,35 @@ public class AdministradorService {
         Page<Usuario> comunes = usuarioRepositorio.findByRol_Codigo("COMUN", pageable);
         return comunes;
     }
+
+    public EmpleadoResponse obtenerEmpleado(Integer id) {
+        var u = usuarioRepositorio.findById(id).orElseThrow();
+        return new EmpleadoResponse(
+                u.getId(), u.getNombre(), u.getCorreo(), u.getTelefono(),
+                u.getRol().getCodigo(), u.getEstaActivo());
+    }
+
+    public void actualizarEmpleado(Integer id, EmpleadoActualizarRequest req) {
+        var u = usuarioRepositorio.findById(id).orElseThrow();
+
+        if (req.getNombre() != null)
+            u.setNombre(req.getNombre());
+        if (req.getCorreo() != null)
+            u.setCorreo(req.getCorreo());
+        if (req.getTelefono() != null)
+            u.setTelefono(req.getTelefono());
+
+        if (!"COMUN".equalsIgnoreCase(u.getRol().getCodigo())) {
+            if (req.getRolCodigo() != null && !req.getRolCodigo().isBlank()) {
+                if (!List.of("ADMIN", "MODERADOR", "LOGISTICA").contains(req.getRolCodigo())) {
+                    throw new IllegalArgumentException("Rol inválido");
+                }
+                var nuevoRol = rolRepositorio.findByCodigo(req.getRolCodigo())
+                        .orElseThrow(() -> new IllegalStateException("No existe el rol: " + req.getRolCodigo()));
+                u.setRol(nuevoRol);
+            }
+        }
+
+        usuarioRepositorio.save(u);
+    }
 }
