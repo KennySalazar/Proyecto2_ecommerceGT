@@ -14,7 +14,11 @@ public class CorsConfig {
   @Bean
   public CorsFilter corsFilter() {
     CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOriginPatterns(List.of("http://localhost:4200"));
+    config.setAllowedOriginPatterns(List.of(
+        "http://localhost:4200",
+        "https://*.netlify.app",
+        "https://stellar-cajeta-18e439.netlify.app",
+        "https://*.ngrok-free.dev"));
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
     config.setAllowedHeaders(List.of("*"));
     config.setAllowCredentials(true);

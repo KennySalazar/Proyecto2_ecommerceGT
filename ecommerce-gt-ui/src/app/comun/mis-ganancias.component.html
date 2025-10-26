@@ -33,14 +33,13 @@
   <div class="row g-3">
     <div class="col-md-4" *ngFor="let it of lista">
       <div class="card h-100 shadow-sm">
-        <ng-container *ngIf="fullImg(it.imagenUrl) as src; else noimg">
-          <img [src]="src" class="card-img-top" style="object-fit:cover">
-        </ng-container>
-        <ng-template #noimg>
-          <div class="bg-light d-flex align-items-center justify-content-center" style="height:180px;">
-            <i class="bi bi-image text-muted fs-1"></i>
-          </div>
-        </ng-template>
+<img
+  [src]="(it.imagenUrl ?? null) | imgUrl"
+  class="card-img-top"
+  style="object-fit:cover"
+  loading="lazy"
+  referrerpolicy="no-referrer"
+/>
 
         <div class="card-body">
           <div class="small text-muted">{{ fFecha(it.fecha) }} · Pedido #{{ it.pedidoId }}</div>

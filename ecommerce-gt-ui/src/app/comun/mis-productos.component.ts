@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProductosService, ProductoCard, SpringPage } from './productos.service';
 import { environment } from '../../environments/environment';
+import { ImgUrlPipe } from '../shared/pipes/img-url.pipe';
 
 @Component({
   standalone: true,
   selector: 'app-mis-productos',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ImgUrlPipe],
   templateUrl: './mis-productos.component.html'
 })
 export class MisProductosComponent implements OnInit {
@@ -24,9 +25,10 @@ export class MisProductosComponent implements OnInit {
 
   ngOnInit(){ this.cargar(); }
 
-  fullImg(p: any): string | null {
-  const u: string | null = p?.imagenUrl ?? p?.imageUrl ?? null; 
-  return u ? this.backendOrigin + u : null;
+fullImg(p: any): string {
+  const u: string | null = p?.imagenUrl ?? p?.imageUrl ?? null;
+  if (!u) return 'assets/noimg.png';
+  return u.startsWith('/uploads/') ? u : '/uploads/' + u.replace(/^\/+/, '');
 }
 
   cargar() {

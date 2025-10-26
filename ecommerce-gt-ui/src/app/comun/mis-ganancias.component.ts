@@ -2,11 +2,12 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GananciasService, GananciaResumenDTO, GananciaItemDTO, Page } from './ganancias.service';
 import { environment } from '../../environments/environment';
+import { ImgUrlPipe } from '../shared/pipes/img-url.pipe';
 
 @Component({
   standalone: true,
   selector: 'app-mis-ganancias',
-  imports: [CommonModule],
+  imports: [CommonModule, ImgUrlPipe],
   templateUrl: './mis-ganancias.component.html'
 })
 export class MisGananciasComponent {
@@ -20,7 +21,11 @@ export class MisGananciasComponent {
 
   ngOnInit(){ this.cargar(); }
 
-  fullImg(u?: string|null){ return u ? this.backendOrigin + u : null; }
+ fullImg(u?: string | null): string {
+  const url = u ?? null;
+  if (!url) return 'assets/noimg.png';
+  return url.startsWith('/uploads/') ? url : '/uploads/' + url.replace(/^\/+/, '');
+}
   asQ(n:number){ return n.toLocaleString('es-GT',{style:'currency',currency:'GTQ'}) }
   fFecha(iso:string){ const d = new Date(iso); return d.toLocaleDateString('es-GT',{year:'numeric',month:'short',day:'2-digit'})}
 

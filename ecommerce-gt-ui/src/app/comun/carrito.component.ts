@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { CarritoDTO, CarritoItemDTO, CarritoService, TarjetaGuardadaLite } from './carrito.service';
 import { environment } from '../../environments/environment';
 import { FormsModule } from '@angular/forms';
+import { ImgUrlPipe } from '../shared/pipes/img-url.pipe';
 
 @Component({
   standalone: true,
   selector: 'app-carrito',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ImgUrlPipe],
   templateUrl: './carrito.component.html'
 })
 export class CarritoComponent implements OnInit {
@@ -76,9 +77,11 @@ confirmNo(){  this.confirmOpen = false; this.confirmResolver?.(false); }
 
   ngOnInit(){ this.cargar(); }
 
-  imgSrc(it: CarritoItemDTO): string | null {
-    return it.imagenUrl ? this.backendOrigin + it.imagenUrl : null;
-  }
+imgSrc(it: CarritoItemDTO): string {
+  const u = it?.imagenUrl ?? null;
+  if (!u) return 'assets/noimg.png';
+  return u.startsWith('/uploads/') ? u : '/uploads/' + u.replace(/^\/+/, '');
+}
 
   cargar(){
     this.cargando = true;

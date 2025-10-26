@@ -2,11 +2,12 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PedidosService, PedidoResumenDTO } from './pedidos.service';
 import { environment } from '../../environments/environment';
+import { ImgUrlPipe } from '../shared/pipes/img-url.pipe';
 
 @Component({
   standalone: true,
   selector: 'app-mis-compras',
-  imports: [CommonModule],
+  imports: [CommonModule, ImgUrlPipe],
   templateUrl: './mis-compras.component.html'
 })
 export class MisComprasComponent {
@@ -26,9 +27,10 @@ export class MisComprasComponent {
     });
   }
 
-  fullImg(url: string | null) {
-    return url ? this.backendOrigin + url : null;
-  }
+fullImg(url: string | null): string {
+  if (!url) return 'assets/noimg.png';
+  return url.startsWith('/uploads/') ? url : '/uploads/' + url.replace(/^\/+/, '');
+}
 
   asQ(q: number){
     return q.toLocaleString('es-GT', { style:'currency', currency:'GTQ' });

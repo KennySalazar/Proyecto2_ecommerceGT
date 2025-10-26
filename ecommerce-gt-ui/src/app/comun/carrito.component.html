@@ -20,10 +20,13 @@
         <ul class="list-group list-group-flush">
           <li class="list-group-item" *ngFor="let it of data.items">
             <div class="d-flex">
-              <img *ngIf="imgSrc(it) as src"
-                  [src]="src"
-                  class="rounded me-3"
-                  style="width:80px;height:80px;object-fit:cover;">
+<img
+  [src]="(it.imagenUrl ?? null) | imgUrl"
+  class="card-img-top"
+  style="object-fit:cover"
+  loading="lazy"
+  referrerpolicy="no-referrer"
+/>
               <div class="flex-grow-1">
                 <div class="fw-semibold">{{ it.nombre }}</div>
                 <div class="text-muted small">{{ asQ(it.precio) }} · Subtotal: <b>{{ asQ(it.subtotal) }}</b></div>

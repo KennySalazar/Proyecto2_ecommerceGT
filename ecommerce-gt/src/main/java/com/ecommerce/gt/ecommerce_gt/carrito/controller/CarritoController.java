@@ -26,6 +26,10 @@ import com.ecommerce.gt.ecommerce_gt.seguridad.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Controlador del carrito de compras.
+ * Permite visualizar, modificar y finalizar compras del usuario autenticado.
+ */
 @RestController
 @RequestMapping("/api/carrito")
 @RequiredArgsConstructor

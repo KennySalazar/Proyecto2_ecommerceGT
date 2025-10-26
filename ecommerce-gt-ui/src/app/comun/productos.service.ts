@@ -11,7 +11,7 @@ export interface ProductoResponse {
   estadoArticulo: 'NUEVO'|'USADO';
   categoria: string;
   estadoModeracion: 'PENDIENTE'|'APROBADO'|'RECHAZADO';
-  imagenUrl?: string | null;
+    imagenUrl: string | null; 
   vendedorId: number;
   ratingPromedio?: number;
   totalResenas?: number;

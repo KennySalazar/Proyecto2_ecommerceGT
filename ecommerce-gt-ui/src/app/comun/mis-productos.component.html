@@ -19,16 +19,11 @@
 
     <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let p of productos">
       <div class="card h-100 shadow-sm">
-<div class="ratio ratio-4x3 bg-light">
-  <ng-container *ngIf="fullImg(p) as src; else noimg">
-    <img [src]="src" class="card-img-top" style="object-fit:cover">
-  </ng-container>
-</div>
-<ng-template #noimg>
-  <div class="w-100 h-100 d-flex align-items-center justify-content-center">
-    <i class="bi bi-image fs-1 text-muted"></i>
-  </div>
-</ng-template>
+<img [src]="p.imagenUrl | imgUrl"
+     class="card-img-top"
+     style="object-fit:cover"
+     loading="lazy"
+     referrerpolicy="no-referrer" />
 
         <div class="card-body">
           <div class="small text-muted mb-1">

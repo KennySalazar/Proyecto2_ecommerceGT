@@ -7,10 +7,11 @@ import { CarritoService } from './carrito.service';
 import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import { ReviewsService } from './reviews.service';
+import { ImgUrlPipe } from '../shared/pipes/img-url.pipe';
 @Component({
   standalone: true,
   selector: 'app-catalogo',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, ImgUrlPipe],
   templateUrl: './catalogo.component.html'
 })
 export class CatalogoComponent {
@@ -20,7 +21,7 @@ export class CatalogoComponent {
   private reviewsSvc = inject(ReviewsService);
   public Math = Math;
 
-  backendOrigin = environment.backendOrigin ?? environment.apiBase.replace(/\/api\/?$/, '');
+backendOrigin = environment.backendOrigin || 'https://interbelligerent-torie-nonstoically.ngrok-free.dev';
 
   productos: ProductoResponse[] = [];
   filtrados: ProductoResponse[] = [];
@@ -32,12 +33,11 @@ export class CatalogoComponent {
 
   ngOnInit() { this.cargar(); }
 
-  fullImg(p: any): string | null {
-    const u: string | null = p?.imagenUrl ?? p?.imageUrl ?? null;
-    return u ? this.backendOrigin + u : null;
-  }
-
-  
+fullImg(p: any): string {
+  const u: string | null = p?.imagenUrl ?? p?.imageUrl ?? null;
+  if (!u) return 'assets/noimg.png';
+  return u.startsWith('/uploads/') ? u : '/uploads/' + u.replace(/^\/+/, '');
+}
   cargar() {
     this.productos = [];
     const tamanio = 50; 
