@@ -56,7 +56,6 @@ public class CarritoService {
     private final EmailService email;
     private final UsuarioRepository usuarioRepo;
 
-    /** Obtiene el carrito vigente del usuario o lo crea */
     private Carrito getOrCreate(Integer usuarioId) {
         return carritoRepo.findFirstByUsuarioIdAndEstaVigenteTrueOrderByIdDesc(usuarioId)
                 .orElseGet(() -> {
@@ -66,7 +65,6 @@ public class CarritoService {
                 });
     }
 
-    /** Mapea a DTO incluyendo stockDisponible */
     private CarritoDTO mapDTO(Carrito c) {
         var items = itemRepo.findByCarritoId(c.getId()).stream().map(ci -> {
             var p = ci.getProducto();
@@ -292,7 +290,6 @@ public class CarritoService {
         List<PedidoItem> items = pedidoItemRepo.findByPedidoId(pedidoId);
         String asunto = "Pedido #" + pedidoId + " confirmado";
 
-        // Formateadores
         var fmtQ = java.text.NumberFormat.getCurrencyInstance(new Locale("es", "GT"));
         var fmtFecha = DateTimeFormatter.ofPattern("d MMM yyyy", new Locale("es", "GT"));
 
@@ -346,8 +343,6 @@ public class CarritoService {
                         entrega,
                         filas.toString(),
                         total, comision, neto,
-                        // si tienes FRONT_URL en env/properties, úsalo:
-                        // FRONT_URL + "/mis-compras"
                         "http://localhost:4200/mis-compras");
 
         email.enviarHtml(usuario.getCorreo(), asunto, html);

@@ -16,7 +16,6 @@ public interface PedidoItemRepository extends JpaRepository<PedidoItem, PedidoIt
 
   boolean existsByProducto_IdAndPedido_CompradorId(Integer productoId, Integer compradorId);
 
-  // Lista de ventas del vendedor (paginada)
   @Query("""
         select pi from PedidoItem pi
           join fetch pi.pedido p
@@ -32,7 +31,6 @@ public interface PedidoItemRepository extends JpaRepository<PedidoItem, PedidoIt
       """)
   long countByVendedor(@Param("vendedorId") Integer vendedorId);
 
-  // Sumas
   @Query("""
         select coalesce(sum(pi.netoVendedor),0)
           from PedidoItem pi join pi.pedido p

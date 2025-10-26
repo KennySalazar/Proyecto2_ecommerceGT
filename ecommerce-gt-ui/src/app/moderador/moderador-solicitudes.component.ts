@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ModeradorService, ModProducto, SpringPage } from './moderador.service';
 import { environment } from '../../environments/environment';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../core/auth.service';
 
 @Component({
   standalone:true,
@@ -12,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class ModeradorSolicitudesComponent {
   private api = inject(ModeradorService);
+  auth = inject(AuthService);
   backendOrigin = environment.backendOrigin ?? environment.apiBase.replace(/\/api\/?$/, '');
 
   lista: ModProducto[] = [];

@@ -1,4 +1,8 @@
 <div class="container py-4">
+  <h6 class="m-0">
+    <i class="bi bi-person-badge me-2"></i>
+    Bienvenido <span class="fw-semibold text-primary">{{ auth.nombre || 'logistica' }}</span>
+  </h6>
   <h4 class="mb-3"><i class="bi bi-truck me-2"></i>Pedidos en curso</h4>
 
   <div *ngIf="cargando" class="text-center py-5"><div class="spinner-border"></div></div>

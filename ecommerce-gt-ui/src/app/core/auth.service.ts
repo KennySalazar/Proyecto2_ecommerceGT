@@ -22,6 +22,7 @@ export class AuthService {
 
   
   private _token = signal<string | null>(localStorage.getItem('token'));
+  private _nombre = signal<string | null>(localStorage.getItem('nombre'));
   isLoggedIn(): boolean {
   return !!localStorage.getItem('token');
 }
@@ -38,9 +39,11 @@ export class AuthService {
     localStorage.setItem('token', resp.token ?? '');
     const rol = (resp.rolCodigo ?? resp.rol ?? 'COMUN');
     localStorage.setItem('rol', rol);
-    if (resp.nombre) localStorage.setItem('nombre', resp.nombre);
+    if (resp.nombre) {
+      localStorage.setItem('nombre', resp.nombre);
+      this._nombre.set(resp.nombre);       
+    }
 
-    
     this._token.set(resp.token ?? '');
   }
 
@@ -53,14 +56,15 @@ export class AuthService {
     return this._token();
   }
 
+  get nombre(): string | null { return this._nombre(); }
 
- 
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('rol');
     localStorage.removeItem('nombre');
 
     this._token.set(null);
+    this._nombre.set(null);
     this.router.navigateByUrl('/login');
   }
 

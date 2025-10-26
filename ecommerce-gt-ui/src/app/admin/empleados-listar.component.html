@@ -1,4 +1,8 @@
 <div class="container py-4">
+    <h6 class="m-0">
+    <i class="bi bi-person-badge me-2"></i>
+    Bienvenido <span class="fw-semibold text-primary">{{ auth.nombre || 'Admin' }}</span>
+  </h6>
   <div class="card shadow-sm border-0 rounded-3 mb-3">
     <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
       <h5 class="mb-0"><i class="bi bi-people me-2"></i>Gestión de Usuarios</h5>
@@ -6,6 +10,10 @@
         <span class="badge bg-light text-dark me-3">
           Total: <strong>{{ total }}</strong>
         </span>
+        
+        <a class="btn btn-info btn-sm fw-semibold" [routerLink]="['/admin/reportes']">
+        <i class="bi bi-graph-up-arrow me-1"></i> Reportes
+        </a>
         <a class="btn btn-warning btn-sm fw-semibold" [routerLink]="['/admin/ganancias']">
             <i class="bi bi-cash-coin me-1"></i> Ver Ganancias
         </a>

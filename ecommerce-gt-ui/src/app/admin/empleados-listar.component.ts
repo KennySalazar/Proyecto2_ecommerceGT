@@ -5,6 +5,7 @@ import { EmpleadosService, EmpleadoFila, SpringPage } from './empleados.service'
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { AuthService } from '../core/auth.service';
 
 @Component({
   standalone: true,
@@ -15,6 +16,9 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 export class EmpleadosListarComponent implements OnInit, OnDestroy {
   private service = inject(EmpleadosService);
+
+  auth = inject(AuthService);
+  adminNombre: string = '';
 
   empleados: EmpleadoFila[] = [];
   pagina = 0;

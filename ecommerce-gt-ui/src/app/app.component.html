@@ -1,13 +1,17 @@
 <nav class="navbar navbar-dark bg-dark px-3 d-flex justify-content-between align-items-center">
   <a class="navbar-brand m-0 fw-semibold text-light" routerLink="/">E-Commerce·GT</a>
 
-  <div *ngIf="loggedIn" class="d-flex align-items-center gap-2">
+  <div *ngIf="loggedIn && mostrarNavbar" class="d-flex align-items-center gap-2">
     <button class="btn btn-sm btn-danger" (click)="auth.logout()">Cerrar sesión</button>
   </div>
 </nav>
 
-<div *ngIf="loggedIn && esComun" class="bg-light border-bottom">
+<div *ngIf="loggedIn && esComun && mostrarNavbar" class="bg-light border-bottom">
   <div class="container py-2 d-flex flex-wrap gap-2">
+    <h6 class="m-0">
+      <i class="bi bi-person-badge me-2"></i>
+      Bienvenido <span class="fw-semibold text-primary">{{ auth.nombre || 'Usuario' }}</span>
+    </h6>
     <a class="btn btn-outline-secondary btn-sm" routerLink="/inicio">
       <i class="bi bi-shop me-1"></i> Catálogo
     </a>
@@ -17,12 +21,12 @@
     <a class="btn btn-primary btn-sm" routerLink="/mis-productos/nuevo">
       <i class="bi bi-plus-circle me-1"></i> Nuevo producto
     </a>
-    <a class="btn btn-outline-secondary" routerLink="/mis-compras">
-  <i class="bi bi-bag-check"></i> Mis compras
-</a>
-<a class="btn btn-outline-secondary btn-sm" routerLink="/mis-ganancias">
-  <i class="bi bi-cash-coin me-1"></i> Mis ganancias
-</a>
+    <a class="btn btn-outline-secondary btn-sm" routerLink="/mis-compras">
+      <i class="bi bi-bag-check me-1"></i> Mis compras
+    </a>
+    <a class="btn btn-outline-secondary btn-sm" routerLink="/mis-ganancias">
+      <i class="bi bi-cash-coin me-1"></i> Mis ganancias
+    </a>
   </div>
 </div>
 

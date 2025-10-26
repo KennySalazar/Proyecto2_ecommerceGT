@@ -1,0 +1,204 @@
+<div class="container py-4">
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="m-0">
+    <i class="bi bi-graph-up-arrow me-2"></i> Reportes del Administrador
+  </h4>
+
+  <a class="btn btn-outline-secondary btn-sm fw-semibold" [routerLink]="['/admin/empleados']">
+    <i class="bi bi-arrow-left-circle me-1"></i> Regresar
+  </a>
+</div>
+
+  <div class="card mb-3">
+    <div class="card-body row g-2 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label">Desde</label>
+        <input type="date" class="form-control" [(ngModel)]="desde">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Hasta</label>
+        <input type="date" class="form-control" [(ngModel)]="hasta">
+      </div>
+      <div class="col-md-3">
+        <button class="btn btn-primary mt-3" (click)="cargarTodo()">
+          <i class="bi bi-funnel me-1"></i>Filtrar
+        </button>
+      </div>
+      <div class="col-md-3 text-end" *ngIf="cargando">
+        <div class="spinner-border"></div>
+      </div>
+      <div *ngIf="error" class="text-danger small">{{ error }}</div>
+    </div>
+  </div>
+
+  <ul class="nav nav-pills mb-3">
+    <li class="nav-item"><button class="nav-link" [class.active]="tab==='productos'" (click)="setTab('productos')">Top 10 productos</button></li>
+    <li class="nav-item"><button class="nav-link" [class.active]="tab==='ganancia'" (click)="setTab('ganancia')">Top 5 clientes por ganancia</button></li>
+    <li class="nav-item"><button class="nav-link" [class.active]="tab==='vendedores'" (click)="setTab('vendedores')">Top 5 vendedores (unidades)</button></li>
+    <li class="nav-item"><button class="nav-link" [class.active]="tab==='pedidos'" (click)="setTab('pedidos')">Top 10 clientes por pedidos</button></li>
+    <li class="nav-item"><button class="nav-link" [class.active]="tab==='inventario'" (click)="setTab('inventario')">Top 10 prod. en venta</button></li>
+<li class="nav-item">
+  <button class="nav-link"
+          [class.active]="tab==='notis'"
+          (click)="onTabNotis()">
+    Historial de notificaciones
+  </button>
+</li>  </ul>
+
+  <div *ngIf="tab==='productos'">
+    <div class="card">
+      <div class="card-body table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>#</th><th>Producto</th><th class="text-end">Unidades</th><th class="text-end">Total vendido (GTQ)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of topProductos; let i = index">
+              <td>{{ i+1 }}</td>
+              <td>{{ p.nombre }}</td>
+              <td class="text-end">{{ p.unidadesVendidas | number }}</td>
+              <td class="text-end">{{ p.totalVendido | currency:'GTQ' }}</td>
+            </tr>
+            <tr *ngIf="topProductos.length===0"><td colspan="4" class="text-center text-muted">Sin datos</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="tab==='ganancia'">
+    <div class="card">
+      <div class="card-body table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr><th>#</th><th>Cliente</th><th class="text-end">Ganancia generada (95%)</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of topGanancia; let i = index">
+              <td>{{ i+1 }}</td>
+              <td>{{ c.nombre }}</td>
+              <td class="text-end">{{ c.totalNeto| currency:'GTQ' }}</td>
+            </tr>
+            <tr *ngIf="topGanancia.length===0"><td colspan="3" class="text-center text-muted">Sin datos</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="tab==='vendedores'">
+    <div class="card">
+      <div class="card-body table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr><th>#</th><th>Vendedor</th><th class="text-end">Unidades vendidas</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let v of topVendedores; let i = index">
+              <td>{{ i+1 }}</td>
+              <td>{{ v.nombre }}</td>
+              <td class="text-end">{{ v.cantidad | number }}</td>
+            </tr>
+            <tr *ngIf="topVendedores.length===0"><td colspan="3" class="text-center text-muted">Sin datos</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="tab==='pedidos'">
+    <div class="card">
+      <div class="card-body table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr><th>#</th><th>Cliente</th><th class="text-end"># Pedidos</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of topPedidos; let i = index">
+              <td>{{ i+1 }}</td>
+              <td>{{ c.nombre }}</td>
+              <td class="text-end">{{ c.cantidad | number }}</td>
+            </tr>
+            <tr *ngIf="topPedidos.length===0"><td colspan="3" class="text-center text-muted">Sin datos</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="tab==='inventario'">
+    <div class="card">
+      <div class="card-body table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr><th>#</th><th>Vendedor</th><th class="text-end"># Productos activos</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let v of topInventario; let i = index">
+              <td>{{ i+1 }}</td>
+              <td>{{ v.nombre }}</td>
+              <td class="text-end">{{ v.cantidad | number }}</td>
+            </tr>
+            <tr *ngIf="topInventario.length===0"><td colspan="3" class="text-center text-muted">Sin datos</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  
+   <div *ngIf="tab==='notis'">
+    <div class="alert alert-light border d-flex align-items-center justify-content-between">
+      <div class="small">
+        Se usa el rango general: <b>{{ desde }}</b> → <b>{{ hasta }}</b>.
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary btn-sm" (click)="cargarNotificacionesSimple()">
+          <i class="bi bi-funnel me-1"></i>Cargar
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body table-responsive">
+        <div *ngIf="cargandoNotis" class="text-center py-4">
+          <div class="spinner-border"></div>
+        </div>
+
+        <table *ngIf="!cargandoNotis" class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Usuario</th>
+              <th>Tipo</th>
+              <th>Asunto</th>
+              <th>Creado</th>
+              <th>Enviado</th>
+              <th>Enviado en</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let n of notisSimple">
+              <td>{{ n.id }}</td>
+              <td>{{ n.usuarioNombre }} ({{ n.usuarioId }})</td>
+              <td><span class="badge bg-secondary">{{ n.tipo }}</span></td>
+              <td>{{ n.asunto }}</td>
+              <td>{{ n.creadoEn | date:'medium' }}</td>
+              <td>
+                <span [class]="'badge ' + (n.enviado ? 'bg-success' : 'bg-danger')">
+                  {{ n.enviado ? 'Sí' : 'No' }}
+                </span>
+              </td>
+              <td>{{ n.enviadoEn ? (n.enviadoEn | date:'medium') : '-' }}</td>
+            </tr>
+            <tr *ngIf="notisSimple.length===0">
+              <td colspan="7" class="text-center text-muted">Sin registros</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

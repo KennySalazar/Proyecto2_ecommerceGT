@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LogisticaService, PedidoLogisticaDTO, SpringPage } from './logistica.service';
+import { AuthService } from '../core/auth.service';
 
 @Component({
   standalone:true,
@@ -11,6 +12,7 @@ import { LogisticaService, PedidoLogisticaDTO, SpringPage } from './logistica.se
 })
 export class LogisticaPendientesComponent {
   private api = inject(LogisticaService);
+  auth = inject(AuthService);
 
   lista: PedidoLogisticaDTO[] = [];
   pagina=0; tamanio=12; totalPaginas=0; cargando=false;

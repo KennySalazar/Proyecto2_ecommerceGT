@@ -77,7 +77,7 @@ public class ModeracionService {
         var para = prod.getVendedor().getCorreo(); // asumiendo getter
         var asunto = "Tu producto fue APROBADO";
         var cuerpo = "Hola " + prod.getVendedor().getNombre() + ",\n\n" +
-                "Tu producto \"" + prod.getNombre() + "\" ha sido APROBADO y ya es visible en el catálogo.\n\n" +
+                "Tu producto \"" + prod.getNombre() + "\" ha sido APROBADO y ya es visible en el catálogo.\n" +
                 "¡Gracias por publicar con nosotros!\n" + "Moderación de Ecommerce GT Team\n";
         emailService.enviar(para, asunto, cuerpo);
     }

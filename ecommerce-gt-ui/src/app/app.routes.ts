@@ -48,6 +48,7 @@ export const routes: Routes = [
 
     { path: 'mis-ganancias', component: MisGananciasComponent },
     { path: 'admin/ganancias', component: GananciasAdminComponent },
+    { path: 'admin/reportes', loadComponent: () => import('./admin/admin-reportes.component').then(m => m.AdminReportesComponent) },
 
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: '**', redirectTo: 'login' }
