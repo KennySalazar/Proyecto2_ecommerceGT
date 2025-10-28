@@ -1,0 +1,4 @@
+/api/*       https://interbelligerent-torie-nonstoically.ngrok-free.dev/api/:splat   200
+/auth/*      https://interbelligerent-torie-nonstoically.ngrok-free.dev/auth/:splat  200
+/uploads/*   https://interbelligerent-torie-nonstoically.ngrok-free.dev/uploads/:splat   200
+/*           /index.html   200
