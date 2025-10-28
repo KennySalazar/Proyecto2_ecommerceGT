@@ -16,16 +16,16 @@ import { MisGananciasComponent } from './comun/mis-ganancias.component';
 import { LogisticaPendientesComponent } from './logistica/logistica-pendientes.component';
 import { GananciasAdminComponent } from './admin/ganancias-admin.component';
 
-
 export const routes: Routes = [
+  // RUTAS PÚBLICAS
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
 
-  // Inicio usuario común
-   { path: 'inicio', component: CatalogoComponent },
+  // CATÁLOGO PRINCIPAL (USUARIO COMÚN)
+  { path: 'inicio', component: CatalogoComponent },
 
-  // ADMIN
-   {
+  // SECCIÓN ADMINISTRADOR (PROTEGIDA POR GUARD)
+  {
     path: 'admin',
     canMatch: [adminGuard],
     children: [
@@ -35,21 +35,30 @@ export const routes: Routes = [
     ]
   },
 
-  { path: 'mis-productos', component: MisProductosComponent},
+  // SECCIÓN DE PRODUCTOS DEL USUARIO
+  { path: 'mis-productos', component: MisProductosComponent },
   { path: 'mis-productos/nuevo', component: ProductoFormComponent },
   { path: 'mis-productos/:id/editar', component: ProductoFormComponent },
 
-   { path: 'carrito', component: CarritoComponent },
-   { path: 'mis-compras', component: MisComprasComponent },
+  // CARRITO Y COMPRAS
+  { path: 'carrito', component: CarritoComponent },
+  { path: 'mis-compras', component: MisComprasComponent },
 
-   { path: 'moderador/solicitudes', component: ModeradorSolicitudesComponent },
-   { path: 'logistica/pendientes', component: LogisticaPendientesComponent },
-   { path: 'admin/empleados/:id/editar', component: EmpleadoCrearComponent },
+  // PANEL DEL MODERADOR
+  { path: 'moderador/solicitudes', component: ModeradorSolicitudesComponent },
 
-    { path: 'mis-ganancias', component: MisGananciasComponent },
-    { path: 'admin/ganancias', component: GananciasAdminComponent },
-    { path: 'admin/reportes', loadComponent: () => import('./admin/admin-reportes.component').then(m => m.AdminReportesComponent) },
+  // PANEL DE LOGÍSTICA
+  { path: 'logistica/pendientes', component: LogisticaPendientesComponent },
 
+  // ADMIN: EDICIÓN DE EMPLEADOS Y GANANCIAS
+  { path: 'admin/empleados/:id/editar', component: EmpleadoCrearComponent },
+  { path: 'mis-ganancias', component: MisGananciasComponent },
+  { path: 'admin/ganancias', component: GananciasAdminComponent },
+
+  // ADMIN: REPORTES (CARGA PEREZOSA)
+  { path: 'admin/reportes', loadComponent: () => import('./admin/admin-reportes.component').then(m => m.AdminReportesComponent) },
+
+  // REDIRECCIONES POR DEFECTO
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: '**', redirectTo: 'login' }
 ];

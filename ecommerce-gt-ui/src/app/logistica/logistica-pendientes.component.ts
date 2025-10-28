@@ -20,8 +20,10 @@ export class LogisticaPendientesComponent {
   editId?: number;
   nuevaFecha = '';
 
+  // SE EJECUTA AL INICIAR EL COMPONENTE
   ngOnInit(){ this.cargar(); }
 
+  // CARGA LOS PEDIDOS EN CURSO PARA LOGÍSTICA
   cargar(){
     this.cargando = true;
     this.api.enCurso(this.pagina, this.tamanio).subscribe({
@@ -33,11 +35,13 @@ export class LogisticaPendientesComponent {
     });
   }
 
+  // ABRE EL CAMPO PARA EDITAR FECHA DE ENTREGA DE UN PEDIDO
   abrirFecha(p:PedidoLogisticaDTO){
     this.editId = p.id;
     this.nuevaFecha = (p.fechaEstimadaEntrega ?? '').substring(0,10); 
   }
 
+  // GUARDA LA NUEVA FECHA DE ENTREGA EN EL SERVIDOR
   guardarFecha(){
     if(!this.editId || !this.nuevaFecha) return;
     this.api.actualizarFechaEntrega(this.editId, this.nuevaFecha).subscribe({
@@ -46,6 +50,7 @@ export class LogisticaPendientesComponent {
     });
   }
 
+  // MARCA UN PEDIDO COMO ENTREGADO
   entregar(p:PedidoLogisticaDTO){
     if(!confirm(`Marcar como ENTREGADO el pedido #${p.id}?`)) return;
     this.api.marcarEntregado(p.id).subscribe({
@@ -54,6 +59,9 @@ export class LogisticaPendientesComponent {
     });
   }
 
+  // AVANZA UNA PÁGINA EN LA LISTA
   next(){ if(this.pagina+1<this.totalPaginas){ this.pagina++; this.cargar(); } }
+
+  // RETROCEDE UNA PÁGINA EN LA LISTA
   prev(){ if(this.pagina>0){ this.pagina--; this.cargar(); } }
 }

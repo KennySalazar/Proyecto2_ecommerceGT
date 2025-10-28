@@ -37,13 +37,13 @@
           <ul class="list-group list-group-flush">
             <li class="list-group-item" *ngFor="let it of p.items">
               <div class="d-flex">
-<img
-  [src]="(it.imagenUrl ?? null) | imgUrl"
-  class="card-img-top"
-  style="object-fit:cover"
-  loading="lazy"
-  referrerpolicy="no-referrer"
-/>
+              <img
+                [src]="(it.imagenUrl ?? null) | imgUrl"
+                class="card-img-top"
+                style="object-fit:cover"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+              />
                 <div class="flex-grow-1">
                   <div class="fw-semibold">{{ it.nombre }}</div>
                   <div class="text-muted small">

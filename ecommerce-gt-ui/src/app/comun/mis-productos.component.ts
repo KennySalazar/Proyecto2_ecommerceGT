@@ -14,23 +14,24 @@ import { ImgUrlPipe } from '../shared/pipes/img-url.pipe';
 export class MisProductosComponent implements OnInit {
   private api = inject(ProductosService);
 
-
-    backendOrigin = environment.backendOrigin ?? environment.apiBase.replace(/\/api\/?$/, '');
-
+  backendOrigin = environment.backendOrigin ?? environment.apiBase.replace(/\/api\/?$/, '');
   productos: ProductoCard[] = [];
   pagina = 0;
   tamanio = 12;
   totalPaginas = 0;
   total = 0;
 
+  // SE EJECUTA AL INICIAR EL COMPONENTE
   ngOnInit(){ this.cargar(); }
 
-fullImg(p: any): string {
-  const u: string | null = p?.imagenUrl ?? p?.imageUrl ?? null;
-  if (!u) return 'assets/noimg.png';
-  return u.startsWith('/uploads/') ? u : '/uploads/' + u.replace(/^\/+/, '');
-}
+  // OBTIENE URL COMPLETA DE IMAGEN O DEVUELVE IMAGEN POR DEFECTO
+  fullImg(p: any): string {
+    const u: string | null = p?.imagenUrl ?? p?.imageUrl ?? null;
+    if (!u) return 'assets/noimg.png';
+    return u.startsWith('/uploads/') ? u : '/uploads/' + u.replace(/^\/+/, '');
+  }
 
+  // CARGA LOS PRODUCTOS DEL USUARIO LOGUEADO
   cargar() {
     this.api.mis(this.pagina, this.tamanio).subscribe((p: SpringPage<ProductoCard>) => {
       this.productos = p.content;
@@ -40,7 +41,9 @@ fullImg(p: any): string {
     });
   }
 
+
   next(){ if (this.pagina + 1 < this.totalPaginas){ this.pagina++; this.cargar(); } }
+
   prev(){ if (this.pagina > 0){ this.pagina--; this.cargar(); } }
 
   toQ(quetzales:number){ return (quetzales).toLocaleString('es-GT',{style:'currency',currency:'GTQ'}) }

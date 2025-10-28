@@ -38,24 +38,48 @@ import com.ecommerce.gt.ecommerce_gt.usuario.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * SERVICIO DEL CARRITO DE COMPRAS.
+ * GESTIONA: VER CARRITO, AGREGAR/ACTUALIZAR/ELIMINAR ITEMS, VACIAR,
+ * REALIZAR CHECKOUT, GUARDAR TARJETAS Y ENVIAR CORREO DE CONFIRMACIÓN.
+ * LA CLASE ES TRANSACCIONAL PARA ASEGURAR CONSISTENCIA EN OPERACIONES.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class CarritoService {
 
+    /** REPOSITORIO DE CARRITOS */
     private final CarritoRepository carritoRepo;
+    /** REPOSITORIO DE ITEMS DEL CARRITO */
     private final CarritoItemRepository itemRepo;
+    /** REPOSITORIO DE PRODUCTOS (STOCK, PRECIOS) */
     private final ProductoRepository productoRepo;
+    /** REPOSITORIO DE IMÁGENES DE PRODUCTO */
     private final ProductoImagenRepository imgRepo;
+    /** REPOSITORIO DE TARJETAS GUARDADAS */
     private final TarjetaGuardadaRepository tarjetaRepo;
+    /** REPOSITORIO DE PEDIDOS */
     private final PedidoRepository pedidoRepo;
+    /** REPOSITORIO DE ITEMS DE PEDIDO */
     private final PedidoItemRepository pedidoItemRepo;
+    /** REPOSITORIO DE ESTADOS DE PEDIDO */
     private final EstadoPedidoRepository estadoPedidoRepo;
+    /** UTILIDAD JWT (NO SE USA DIRECTO AQUÍ, PERO ESTÁ INYECTADA) */
     private final JwtUtil jwt;
+    /** REPOSITORIO DE PAGOS */
     private final PagoRepository pagoRepo;
+    /** SERVICIO DE EMAIL PARA NOTIFICACIONES */
     private final EmailService email;
+    /** REPOSITORIO DE USUARIOS (PARA CORREO) */
     private final UsuarioRepository usuarioRepo;
 
+    /**
+     * OBTIENE EL CARRITO ACTIVO DEL USUARIO O LO CREA SI NO EXISTE.
+     *
+     * @param usuarioId ID DEL USUARIO
+     * @return CARRITO ACTIVO
+     */
     private Carrito getOrCreate(Integer usuarioId) {
         return carritoRepo.findFirstByUsuarioIdAndEstaVigenteTrueOrderByIdDesc(usuarioId)
                 .orElseGet(() -> {
@@ -65,6 +89,13 @@ public class CarritoService {
                 });
     }
 
+    /**
+     * MAPE A DTO DEL CARRITO CON SUS ITEMS Y TOTAL.
+     * INCLUYE URL DE IMAGEN PRINCIPAL Y STOCK RESTANTE.
+     *
+     * @param c ENTIDAD CARRITO
+     * @return CarritoDTO CON ITEMS Y TOTAL
+     */
     private CarritoDTO mapDTO(Carrito c) {
         var items = itemRepo.findByCarritoId(c.getId()).stream().map(ci -> {
             var p = ci.getProducto();
@@ -88,6 +119,12 @@ public class CarritoService {
         return new CarritoDTO(c.getId(), items, total);
     }
 
+    /**
+     * DEVUELVE EL CARRITO ACTUAL DEL USUARIO CON DETALLES Y TOTALES.
+     *
+     * @param usuarioId ID DEL USUARIO
+     * @return CarritoDTO
+     */
     public CarritoDTO ver(Integer usuarioId) {
         var c = getOrCreate(usuarioId);
 
@@ -113,12 +150,22 @@ public class CarritoService {
         return new CarritoDTO(c.getId(), items, total);
     }
 
+    /**
+     * AGREGA UN PRODUCTO AL CARRITO, RESERVANDO STOCK.
+     * SI NO HAY STOCK SUFICIENTE, LANZA EXCEPCIÓN.
+     *
+     * @param usuarioId  ID DEL USUARIO
+     * @param productoId ID DEL PRODUCTO
+     * @param cantidad   CANTIDAD A AGREGAR (DEFAULT 1)
+     * @return CarritoDTO ACTUALIZADO
+     */
     public CarritoDTO agregar(Integer usuarioId, Integer productoId, Integer cantidad) {
         if (cantidad == null || cantidad <= 0)
             cantidad = 1;
 
         var c = getOrCreate(usuarioId);
 
+        // RESERVA STOCK; SI NO RESERVA, REPORTA STOCK RESTANTE
         int ok = productoRepo.reservarStock(productoId, cantidad);
         if (ok == 0) {
             Integer s = productoRepo.stockRestante(productoId);
@@ -127,12 +174,14 @@ public class CarritoService {
 
         var p = productoRepo.findById(productoId).orElseThrow();
 
+        // SI YA EXISTE EN EL CARRITO, SOLO SUMA LA CANTIDAD
         var existing = itemRepo.findByCarritoIdAndProductoId(c.getId(), p.getId());
         if (existing.isPresent()) {
             var it = existing.get();
             it.setCantidad(it.getCantidad() + cantidad);
             itemRepo.save(it);
         } else {
+            // SI NO EXISTE, CREA NUEVO ITEM
             var pk = new CarritoItemPK();
             pk.setCarritoId(c.getId());
             pk.setProductoId(p.getId());
@@ -148,6 +197,15 @@ public class CarritoService {
         return mapDTO(c);
     }
 
+    /**
+     * ACTUALIZA LA CANTIDAD DE UN PRODUCTO EN EL CARRITO.
+     * AJUSTA LAS RESERVAS DE STOCK SEGÚN EL CAMBIO.
+     *
+     * @param usuarioId  ID DEL USUARIO
+     * @param productoId ID DEL PRODUCTO
+     * @param cantidad   NUEVA CANTIDAD (>=1)
+     * @return CarritoDTO ACTUALIZADO
+     */
     public CarritoDTO actualizarCantidad(Integer usuarioId, Integer productoId, Integer cantidad) {
         if (cantidad == null || cantidad <= 0)
             throw new IllegalStateException("La cantidad mínima es 1");
@@ -158,6 +216,7 @@ public class CarritoService {
 
         int delta = cantidad - it.getCantidad();
         if (delta > 0) {
+            // SE NECESITA RESERVAR STOCK EXTRA
             int ok = productoRepo.reservarStock(productoId, delta);
             if (ok == 0) {
                 Integer s = productoRepo.stockRestante(productoId);
@@ -165,6 +224,7 @@ public class CarritoService {
                         "No hay stock suficiente. Quedan " + (s == null ? 0 : s) + " unidades.");
             }
         } else if (delta < 0) {
+            // SE LIBERA STOCK SI LA CANTIDAD DISMINUYE
             productoRepo.liberarStock(productoId, -delta);
         }
 
@@ -173,6 +233,13 @@ public class CarritoService {
         return mapDTO(c);
     }
 
+    /**
+     * ELIMINA UN ITEM DEL CARRITO Y LIBERA SU STOCK.
+     *
+     * @param usuarioId  ID DEL USUARIO
+     * @param productoId ID DEL PRODUCTO A ELIMINAR
+     * @return CarritoDTO ACTUALIZADO
+     */
     public CarritoDTO eliminarItem(Integer usuarioId, Integer productoId) {
         var c = getOrCreate(usuarioId);
         itemRepo.findByCarritoIdAndProductoId(c.getId(), productoId).ifPresent(it -> {
@@ -182,6 +249,11 @@ public class CarritoService {
         return mapDTO(c);
     }
 
+    /**
+     * VACÍA EL CARRITO COMPLETO, LIBERANDO STOCK DE TODOS LOS ITEMS.
+     *
+     * @param usuarioId ID DEL USUARIO
+     */
     public void vaciar(Integer usuarioId) {
         var c = getOrCreate(usuarioId);
         var items = itemRepo.findByCarritoId(c.getId());
@@ -191,19 +263,35 @@ public class CarritoService {
         itemRepo.deleteAll(items);
     }
 
+    /**
+     * REALIZA EL CHECKOUT:
+     * 1) VALIDA QUE EXISTA CARRITO CON ITEMS.
+     * 2) CALCULA TOTALES (COMISIÓN 5%).
+     * 3) CREA PEDIDO E ITEMS DE PEDIDO.
+     * 4) REGISTRA PAGO
+     * 5) VACÍA CARRITO
+     * 6) ENVÍA CORREO DE CONFIRMACIÓN AL COMPRADOR.
+     *
+     * @param usuarioId ID DEL USUARIO
+     * @param req       DATOS DE PAGO/TARJETA
+     * @return ID DEL PEDIDO CREADO
+     */
     public Integer checkout(Integer usuarioId, CheckoutReq req) {
         var c = getOrCreate(usuarioId);
         var items = itemRepo.findByCarritoId(c.getId());
         if (items.isEmpty())
             throw new IllegalStateException("Carrito vacío");
 
+        // CALCULA TOTALES
         int totalBruto = items.stream().mapToInt(i -> i.getPrecio() * i.getCantidad()).sum();
         int comision = Math.round(totalBruto * 5 / 100.0f);
         int netoVendedores = totalBruto - comision;
 
+        // ESTADO INICIAL DEL PEDIDO
         EstadoPedido estadoNuevo = estadoPedidoRepo.findByCodigo("EN_CURSO")
                 .orElseThrow();
 
+        // CREA PEDIDO
         var pedido = new Pedido();
         pedido.setCompradorId(usuarioId);
         pedido.setTotalBruto(totalBruto);
@@ -216,6 +304,7 @@ public class CarritoService {
 
         pedido = pedidoRepo.save(pedido);
 
+        // CREA ITEMS DE PEDIDO Y CALCULA COMISIONES POR ITEM
         for (var ci : items) {
             var p = ci.getProducto();
 
@@ -243,6 +332,7 @@ public class CarritoService {
 
         }
 
+        // GESTIÓN DE TARJETA GUARDADA
         Integer tarjetaId = null;
         if (Boolean.TRUE.equals(req.getGuardarTarjeta()) && req.getTokenPasarela() != null) {
             var tg = new TarjetaGuardada();
@@ -268,19 +358,33 @@ public class CarritoService {
         pago.setReferenciaPasarela("SIM-" + UUID.randomUUID());
         pagoRepo.save(pago);
 
+        // LIMPIA CARRITO
         itemRepo.deleteAll(items);
         c.setEstaVigente(false);
         carritoRepo.save(c);
 
+        // ENVÍA CORREO DE CONFIRMACIÓN
         enviarCorreoConfirmacion(pedido.getId(), usuarioId);
 
         return pedido.getId();
     }
 
+    /**
+     * LISTA TARJETAS GUARDADAS DEL USUARIO.
+     *
+     * @param usuarioId ID DEL USUARIO
+     * @return LISTA DE TARJETAS
+     */
     public List<TarjetaGuardada> tarjetasDe(Integer usuarioId) {
         return tarjetaRepo.findByUsuarioId(usuarioId);
     }
 
+    /**
+     * ENVÍA CORREO DE CONFIRMACIÓN AL COMPRADOR CON EL DETALLE DEL PEDIDO.
+     *
+     * @param pedidoId  ID DEL PEDIDO
+     * @param usuarioId ID DEL USUARIO
+     */
     private void enviarCorreoConfirmacion(Integer pedidoId, Integer usuarioId) {
         var usuario = usuarioRepo.findById(usuarioId).orElse(null);
         if (usuario == null)
@@ -315,6 +419,7 @@ public class CarritoService {
                 ? pedido.getFechaEstimadaEntrega().format(fmtFecha)
                 : "-";
 
+        // HTML DEL CORREO
         String html = """
                     <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111">
                       <h2 style="margin:0 0 12px">¡Gracias por tu compra, %s!</h2>

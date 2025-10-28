@@ -8,9 +8,21 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
+/**
+ * REPOSITORIO PARA REPORTES DE PRODUCTOS.
+ * PERMITE GENERAR ESTADÍSTICAS COMO LOS VENDEDORES CON MÁS PRODUCTOS A LA
+ * VENTA.
+ */
 public interface ProductoReportesRepository extends JpaRepository<Producto, Integer> {
 
-    // Top 10 clientes que más productos tienen a la venta
+    /**
+     * OBTIENE EL TOP DE VENDEDORES CON MAYOR INVENTARIO PUBLICADO.
+     * CONSIDERA SOLO PRODUCTOS CON STOCK DISPONIBLE.
+     *
+     * @param pageable OBJETO PARA LIMITAR Y PAGINAR LOS RESULTADOS
+     * @return LISTA DE TopClienteCantidadDTO CON ID, NOMBRE Y CANTIDAD DE
+     *         PRODUCTOS.
+     */
     @Query("""
             select new com.ecommerce.gt.ecommerce_gt.admin.reportes.dto.TopClienteCantidadDTO(
                 pr.vendedor.id,

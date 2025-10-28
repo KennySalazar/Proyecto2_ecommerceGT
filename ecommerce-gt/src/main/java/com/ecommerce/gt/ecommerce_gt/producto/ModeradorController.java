@@ -14,14 +14,33 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * CONTROLADOR PARA MODERADORES.
+ * PERMITE VER SOLICITUDES PENDIENTES, APROBAR, RECHAZAR
+ * Y VER EL HISTORIAL DEL MODERADOR AUTENTICADO.
+ *
+ * RUTA BASE: /api/moderador
+ */
 @RestController
 @RequestMapping("/api/moderador")
 @RequiredArgsConstructor
 public class ModeradorController {
 
+    /** SERVICIO CON LA LÓGICA DE MODERACIÓN */
     private final ModeracionService service;
+
+    /** UTILIDAD JWT PARA OBTENER EL ID DEL USUARIO DESDE EL TOKEN */
     private final JwtUtil jwt;
 
+    /**
+     * LISTA PRODUCTOS PENDIENTES DE MODERACIÓN.
+     *
+     * MÉTODO: GET /api/moderador/solicitudes
+     *
+     * @param pagina  NÚMERO DE PÁGINA
+     * @param tamanio TAMAÑO DE LA PÁGINA
+     * @return PÁGINA DE PRODUCTOS PENDIENTES
+     */
     @GetMapping("/solicitudes")
     public Page<ProductoModeracionDTO> pendientes(
             @RequestParam(defaultValue = "0") int pagina,
@@ -29,6 +48,15 @@ public class ModeradorController {
         return service.listarPendientes(pagina, tamanio);
     }
 
+    /**
+     * APRUEBA UN PRODUCTO PENDIENTE.
+     *
+     * MÉTODO: POST /api/moderador/solicitudes/{id}/aprobar
+     *
+     * @param auth CABECERA AUTHORIZATION CON TOKEN JWT
+     * @param id   ID DEL PRODUCTO A APROBAR
+     * @return 200 OK SI TODO SALE BIEN
+     */
     @PostMapping("/solicitudes/{id}/aprobar")
     public ResponseEntity<?> aprobar(@RequestHeader("Authorization") String auth,
             @PathVariable Integer id) {
@@ -37,6 +65,16 @@ public class ModeradorController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * RECHAZA UN PRODUCTO PENDIENTE INDICANDO UN MOTIVO.
+     *
+     * MÉTODO: POST /api/moderador/solicitudes/{id}/rechazar
+     *
+     * @param auth CABECERA AUTHORIZATION CON TOKEN JWT
+     * @param id   ID DEL PRODUCTO A RECHAZAR
+     * @param req  CUERPO CON EL MOTIVO DE RECHAZO
+     * @return 200 OK SI SE RECHAZA CORRECTAMENTE
+     */
     @PostMapping("/solicitudes/{id}/rechazar")
     public ResponseEntity<?> rechazar(@RequestHeader("Authorization") String auth,
             @PathVariable Integer id,
@@ -46,6 +84,16 @@ public class ModeradorController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * MUESTRA EL HISTORIAL DE MODERACIONES DEL MODERADOR AUTENTICADO.
+     *
+     * MÉTODO: GET /api/moderador/historial
+     *
+     * @param auth    CABECERA AUTHORIZATION CON TOKEN JWT
+     * @param pagina  NÚMERO DE PÁGINA
+     * @param tamanio TAMAÑO DE LA PÁGINA
+     * @return PÁGINA DE HISTORIAL (APROBADOS/RECHAZADOS) ORDENADO DESC POR ID
+     */
     @GetMapping("/historial")
     public Page<ModProductoDTO> historial(
             @RequestHeader("Authorization") String auth,

@@ -20,16 +20,19 @@ export class LogisticaService {
   private http = inject(HttpClient);
   private base = `${environment.apiBase}/logistica`;
 
+  // OBTIENE PEDIDOS EN CURSO (PENDIENTES DE ENTREGA)
   enCurso(pagina=0, tamanio=12) {
     return this.http.get<SpringPage<PedidoLogisticaDTO>>(
       `${this.base}/en-curso`, { params:{ pagina, tamanio } }
     );
   }
 
+  // ACTUALIZA LA FECHA ESTIMADA DE ENTREGA DE UN PEDIDO
   actualizarFechaEntrega(id:number, fechaISO:string) {
     return this.http.put<void>(`${this.base}/${id}/fecha-entrega`, null, { params:{ fecha: fechaISO } });
   }
 
+  // MARCA UN PEDIDO COMO ENTREGADO
   marcarEntregado(id:number) {
     return this.http.post<void>(`${this.base}/${id}/entregar`, {});
   }

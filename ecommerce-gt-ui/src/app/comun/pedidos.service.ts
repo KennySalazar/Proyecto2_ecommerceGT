@@ -13,7 +13,7 @@ export interface PedidoItemLiteDTO {
 
 export interface PedidoResumenDTO {
   id: number;
-  fecha: string; // ISO
+  fecha: string; 
   total: number;
   estado: string;
   fechaEstimadaEntrega?: string | null;
@@ -25,6 +25,7 @@ export class PedidosService {
   private http = inject(HttpClient);
   private base = `${environment.apiBase}/pedidos`;
 
+  // CONSTRUYE ENCABEZADOS CON TOKEN JWT PARA AUTENTICACIÓN
   private authHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     return new HttpHeaders({
@@ -33,8 +34,8 @@ export class PedidosService {
     });
   }
 
+  // OBTIENE TODOS LOS PEDIDOS DEL USUARIO ACTUAL
   misPedidos() {
     return this.http.get<PedidoResumenDTO[]>(`${this.base}/mios`, { headers: this.authHeaders() });
-   
   }
 }

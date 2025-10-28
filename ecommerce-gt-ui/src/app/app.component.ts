@@ -17,24 +17,26 @@ export class AppComponent {
 
   loggedIn = false;
   esComun = false;
-  mostrarNavbar = true; // controlará si mostramos o no la barra de usuario
+  mostrarNavbar = true;
 
+  // SE EJECUTA AL INICIAR LA APLICACIÓN Y DETECTA CAMBIOS DE RUTA
   ngOnInit() {
     this.actualizarEstado();
 
-    // Detecta navegación entre rutas
+    // ACTUALIZA EL ESTADO AL CAMBIAR DE RUTA
     this.router.events.pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
         this.actualizarEstado();
       });
   }
 
+  // ACTUALIZA ESTADO DE SESIÓN, ROL Y VISIBILIDAD DEL NAVBAR
   private actualizarEstado() {
     const rol = this.auth.obtenerRol();
     this.loggedIn = this.auth.isLoggedIn();
     this.esComun = rol === 'COMUN';
 
-    // Oculta menú si estás en login o register
+    // OCULTA NAVBAR EN LOGIN Y REGISTER
     const url = this.router.url;
     this.mostrarNavbar = !url.startsWith('/login') && !url.startsWith('/register');
   }

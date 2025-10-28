@@ -11,13 +11,27 @@ import org.springframework.stereotype.Service;
 import java.time.*;
 import java.util.List;
 
+/**
+ * SERVICIO DE GANANCIAS PARA VENDEDORES.
+ * CALCULA RESÚMENES RÁPIDOS Y LISTAS PAGINADAS DE VENTAS.
+ */
 @Service
 @RequiredArgsConstructor
 public class GananciasService {
 
+    /** REPOSITORIO DE ITEMS DE PEDIDO */
     private final PedidoItemRepository itemRepo;
+
+    /** REPOSITORIO DE IMÁGENES DE PRODUCTO */
     private final ProductoImagenRepository imgRepo;
 
+    /**
+     * DEVUELVE UN RESUMEN DE GANANCIAS DEL VENDEDOR.
+     * INCLUYE TOTAL HISTÓRICO, HOY, MES, Y CANTIDAD DE VENTAS.
+     *
+     * @param vendedorId ID DEL VENDEDOR
+     * @return DTO CON TOTALES Y CONTADORES
+     */
     public GananciaResumenDTO resumen(Integer vendedorId) {
         var hoy = LocalDate.now();
         var iniHoy = hoy.atStartOfDay(ZoneId.systemDefault()).toInstant();
@@ -36,6 +50,15 @@ public class GananciasService {
         return new GananciaResumenDTO(totalNeto, netoHoy, netoMes, ventasHoy, ventasMes);
     }
 
+    /**
+     * LISTA LAS VENTAS (ITEMS) DEL VENDEDOR EN FORMATO PAGINADO.
+     * MAPEa CADA ITEM A UN DTO CON DATOS DEL PEDIDO Y DEL PRODUCTO.
+     *
+     * @param vendedorId ID DEL VENDEDOR
+     * @param pagina     NÚMERO DE PÁGINA (0-BASED)
+     * @param tamanio    TAMAÑO DE LA PÁGINA
+     * @return PÁGINA DE GananciaItemDTO
+     */
     public Page<GananciaItemDTO> listar(Integer vendedorId, int pagina, int tamanio) {
         Pageable p = PageRequest.of(pagina, tamanio);
         long total = itemRepo.countByVendedor(vendedorId);
